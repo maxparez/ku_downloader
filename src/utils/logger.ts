@@ -1,8 +1,8 @@
 import winston from 'winston';
 import path from 'path';
 import fs from 'fs';
-import type { LogLevel, LogEntry } from '../types/index';
-import { LOGGING_CONFIG } from '@config/defaults.js';
+import type { LogLevel, LogEntry } from '../types/index.js';
+import { LOGGING_CONFIG } from '../config/defaults.js';
 
 /**
  * Logger utility for ESF Downloader

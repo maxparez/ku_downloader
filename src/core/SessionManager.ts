@@ -3,11 +3,11 @@ import type {
   SessionInfo, 
   ChromeConnection,
   CDPClient
-} from '../types/index';
-import { NetworkError, AuthError } from '../types/index';
-import { CHROME_CONFIG } from '@config/defaults.js';
-import { ESFEventEmitter } from '@events/EventEmitter.js';
-import { logger } from '@utils/logger.js';
+} from '../types/index.js';
+import { NetworkError, AuthError } from '../types/index.js';
+import { CHROME_CONFIG } from '../config/defaults.js';
+import { ESFEventEmitter } from '../events/EventEmitter.js';
+import { logger } from '../utils/logger.js';
 
 /**
  * Session Manager for ESF Downloader

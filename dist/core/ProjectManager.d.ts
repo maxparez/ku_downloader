@@ -1,4 +1,4 @@
-import type { ProjectInfo, ValidationResult, ESFProjectUrl } from '../types/index';
+import type { ProjectInfo, ValidationResult, ESFProjectUrl } from '../types/index.js';
 /**
  * Project Manager for ESF Downloader
  * Handles project number validation, normalization, and URL building

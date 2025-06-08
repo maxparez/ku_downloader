@@ -1,5 +1,5 @@
-import type { AppConfig, DownloadResult } from '../types/index';
-import { ESFEventEmitter } from '@events/EventEmitter.js';
+import type { AppConfig, DownloadResult } from '../types/index.js';
+import { ESFEventEmitter } from '../events/EventEmitter.js';
 /**
  * Main Download Engine for ESF Downloader
  * Orchestrates the entire download process
@@ -58,7 +58,7 @@ export declare class DownloadEngine extends ESFEventEmitter {
     /**
      * Cleanup resources
      */
-    private cleanup;
+    cleanup(): Promise<void>;
     /**
      * Get current configuration
      */

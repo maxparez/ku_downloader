@@ -1,4 +1,4 @@
-import type { LogLevel, LogEntry } from '../types/index';
+import type { LogLevel, LogEntry } from '../types/index.js';
 /**
  * Logger utility for ESF Downloader
  * Provides structured logging with Winston

@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import type { AppConfig, CLIArgs, ValidationResult } from '../types/index';
+import type { AppConfig, CLIArgs, ValidationResult } from '../types/index.js';
 import { DEFAULT_CONFIG, ENV_MAPPINGS } from './defaults.js';
 
 /**

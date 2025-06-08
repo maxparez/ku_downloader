@@ -1,5 +1,5 @@
-import type { SessionInfo, ChromeConnection } from '../types/index';
-import { ESFEventEmitter } from '@events/EventEmitter.js';
+import type { SessionInfo, ChromeConnection } from '../types/index.js';
+import { ESFEventEmitter } from '../events/EventEmitter.js';
 /**
  * Session Manager for ESF Downloader
  * Handles Chrome connection and session state

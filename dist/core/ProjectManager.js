@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
-import { ESF_CONFIG } from '@config/defaults.js';
-import { logger } from '@utils/logger.js';
+import { ESF_CONFIG } from '../config/defaults.js';
+import { logger } from '../utils/logger.js';
 /**
  * Project Manager for ESF Downloader
  * Handles project number validation, normalization, and URL building

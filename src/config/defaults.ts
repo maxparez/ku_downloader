@@ -1,4 +1,4 @@
-import type { AppConfig } from '../types/index';
+import type { AppConfig } from '../types/index.js';
 
 /**
  * Default configuration values for ESF Downloader

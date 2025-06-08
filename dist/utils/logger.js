@@ -1,7 +1,7 @@
 import winston from 'winston';
 import path from 'path';
 import fs from 'fs';
-import { LOGGING_CONFIG } from '@config/defaults.js';
+import { LOGGING_CONFIG } from '../config/defaults.js';
 /**
  * Logger utility for ESF Downloader
  * Provides structured logging with Winston

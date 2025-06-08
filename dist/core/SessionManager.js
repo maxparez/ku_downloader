@@ -1,8 +1,8 @@
 import CDP from 'chrome-remote-interface';
-import { NetworkError } from '../types/index';
-import { CHROME_CONFIG } from '@config/defaults.js';
-import { ESFEventEmitter } from '@events/EventEmitter.js';
-import { logger } from '@utils/logger.js';
+import { NetworkError } from '../types/index.js';
+import { CHROME_CONFIG } from '../config/defaults.js';
+import { ESFEventEmitter } from '../events/EventEmitter.js';
+import { logger } from '../utils/logger.js';
 /**
  * Session Manager for ESF Downloader
  * Handles Chrome connection and session state

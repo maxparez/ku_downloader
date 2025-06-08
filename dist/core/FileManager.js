@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
-import { FileError } from '../types/index';
-import { logger } from '@utils/logger.js';
+import { FileError } from '../types/index.js';
+import { logger } from '../utils/logger.js';
 /**
  * File Manager for ESF Downloader
  * Handles file operations, directory management, and metadata

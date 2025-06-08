@@ -3,9 +3,9 @@ import type {
   ProjectInfo, 
   ValidationResult, 
   ESFProjectUrl
-} from '../types/index';
-import { ESF_CONFIG } from '@config/defaults.js';
-import { logger } from '@utils/logger.js';
+} from '../types/index.js';
+import { ESF_CONFIG } from '../config/defaults.js';
+import { logger } from '../utils/logger.js';
 
 /**
  * Project Manager for ESF Downloader

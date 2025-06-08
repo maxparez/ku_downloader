@@ -121,7 +121,6 @@ export interface CLIArgs {
   rateLimit?: number;
   retry?: number;
   dryRun?: boolean;
-  help?: boolean;
 }
 
 // Validation Types

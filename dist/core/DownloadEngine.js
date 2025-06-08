@@ -1,9 +1,9 @@
-import { ESFEventEmitter } from '@events/EventEmitter.js';
+import { ESFEventEmitter } from '../events/EventEmitter.js';
 import { ProjectManager } from './ProjectManager.js';
 import { SessionManager } from './SessionManager.js';
 import { FileManager } from './FileManager.js';
-import { logger } from '@utils/logger.js';
-import { ESF_CONFIG } from '@config/defaults.js';
+import { logger } from '../utils/logger.js';
+import { ESF_CONFIG } from '../config/defaults.js';
 /**
  * Main Download Engine for ESF Downloader
  * Orchestrates the entire download process

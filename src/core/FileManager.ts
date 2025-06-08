@@ -4,9 +4,9 @@ import crypto from 'crypto';
 import type { 
   FileInfo, 
   ProjectMetadata
-} from '../types/index';
-import { FileError } from '../types/index';
-import { logger } from '@utils/logger.js';
+} from '../types/index.js';
+import { FileError } from '../types/index.js';
+import { logger } from '../utils/logger.js';
 
 /**
  * File Manager for ESF Downloader

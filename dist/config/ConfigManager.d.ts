@@ -1,4 +1,4 @@
-import type { AppConfig, CLIArgs, ValidationResult } from '../types/index';
+import type { AppConfig, CLIArgs, ValidationResult } from '../types/index.js';
 /**
  * Configuration Manager for ESF Downloader
  * Handles loading and merging configuration from multiple sources

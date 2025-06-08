@@ -5,13 +5,13 @@ import type {
   ProjectInfo,
   ProjectMetadata,
   ESFCardInfo 
-} from '../types/index';
-import { ESFEventEmitter } from '@events/EventEmitter.js';
+} from '../types/index.js';
+import { ESFEventEmitter } from '../events/EventEmitter.js';
 import { ProjectManager } from './ProjectManager.js';
 import { SessionManager } from './SessionManager.js';
 import { FileManager } from './FileManager.js';
-import { logger, ProjectLogger } from '@utils/logger.js';
-import { ESF_CONFIG } from '@config/defaults.js';
+import { logger, ProjectLogger } from '../utils/logger.js';
+import { ESF_CONFIG } from '../config/defaults.js';
 
 /**
  * Main Download Engine for ESF Downloader
@@ -417,7 +417,7 @@ export class DownloadEngine extends ESFEventEmitter {
   /**
    * Cleanup resources
    */
-  private async cleanup(): Promise<void> {
+  async cleanup(): Promise<void> {
     try {
       await this.sessionManager.cleanup();
       this.removeAllESFListeners();

@@ -1,5 +1,5 @@
 import { EventEmitter as NodeEventEmitter } from 'events';
-import type { AppEvent, ProgressEvent, ErrorEvent, StatusEvent } from '../types/index';
+import type { AppEvent, ProgressEvent, ErrorEvent, StatusEvent } from '../types/index.js';
 /**
  * Custom EventEmitter for ESF Downloader with type safety
  * Extends Node.js EventEmitter with our specific event types

@@ -90,7 +90,6 @@ export interface CLIArgs {
     rateLimit?: number;
     retry?: number;
     dryRun?: boolean;
-    help?: boolean;
 }
 export interface ValidationResult {
     isValid: boolean;

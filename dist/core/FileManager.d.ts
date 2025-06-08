@@ -1,4 +1,4 @@
-import type { FileInfo, ProjectMetadata } from '../types/index';
+import type { FileInfo, ProjectMetadata } from '../types/index.js';
 /**
  * File Manager for ESF Downloader
  * Handles file operations, directory management, and metadata
