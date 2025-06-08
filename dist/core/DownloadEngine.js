@@ -2,6 +2,7 @@ import { ESFEventEmitter } from '../events/EventEmitter.js';
 import { ProjectManager } from './ProjectManager.js';
 import { SessionManager } from './SessionManager.js';
 import { FileManager } from './FileManager.js';
+import { ESFPortal } from './ESFPortal.js';
 import { logger } from '../utils/logger.js';
 import { ESF_CONFIG } from '../config/defaults.js';
 /**
@@ -12,6 +13,7 @@ export class DownloadEngine extends ESFEventEmitter {
     projectManager;
     sessionManager;
     fileManager;
+    esfPortal = null;
     config;
     isRunning = false;
     constructor(config) {
@@ -88,64 +90,67 @@ export class DownloadEngine extends ESFEventEmitter {
                 throw new Error(`Invalid project number: ${validation.error}`);
             }
             const normalizedNumber = validation.value;
+            // Ensure Chrome connection and ESF portal
+            await this.ensureConnections();
             // Create project directory
             await this.fileManager.createProjectDirectory(normalizedNumber);
-            // Navigate to project page
-            const projectUrl = this.projectManager.buildProjectUrl(normalizedNumber);
-            await this.sessionManager.navigateToUrl(projectUrl.fullUrl);
-            // Check authentication
-            if (!this.sessionManager.isAuthenticated()) {
-                throw new Error('User authentication required. Please login manually to identita.gov.cz');
-            }
-            // Extract card information
-            const cards = await this.extractCardInfo(normalizedNumber);
+            // Navigate to project page using ESF portal
+            await this.esfPortal.navigateToProject(normalizedNumber);
+            // Discover PDF cards
+            const cards = await this.esfPortal.discoverPDFCards(normalizedNumber);
             if (cards.length === 0) {
-                projectLogger.warn('No cards found for project');
+                projectLogger.warn('No PDF cards found for project');
                 return this.createEmptyResult(normalizedNumber);
             }
-            projectLogger.info(`Found ${cards.length} cards to download`);
-            // Download cards
-            const downloadedFiles = [];
-            const errors = [];
-            for (let i = 0; i < cards.length; i++) {
-                const card = cards[i];
-                try {
-                    this.emitDownloadProgress(normalizedNumber, i + 1, cards.length, { fileName: card.fileName });
-                    if (!this.config.dryRun) {
-                        await this.downloadCard(card, normalizedNumber);
-                        downloadedFiles.push(card.fileName);
-                    }
-                    projectLogger.downloadProgress(i + 1, cards.length, card.fileName);
-                    // Rate limiting between files
-                    if (this.config.rateLimit > 0) {
-                        await this.delay(this.config.rateLimit);
-                    }
+            projectLogger.info(`Found ${cards.length} PDF cards to download`);
+            if (this.config.dryRun) {
+                projectLogger.info('DRY RUN - Simulating downloads');
+                // Simulate progress for dry run
+                for (let i = 0; i < cards.length; i++) {
+                    this.emitDownloadProgress(normalizedNumber, i + 1, cards.length, {
+                        fileName: cards[i].fileName
+                    });
+                    await this.delay(100); // Fast simulation
                 }
-                catch (error) {
-                    const errorMsg = `Failed to download ${card.fileName}: ${error.message}`;
-                    errors.push(errorMsg);
-                    projectLogger.error(errorMsg, error);
-                    // Continue with next card unless too many failures
-                    if (errors.length > cards.length / 2) {
-                        throw new Error(`Too many download failures (${errors.length}/${cards.length})`);
-                    }
-                }
+                const metadata = this.createSuccessMetadata(normalizedNumber, cards.length, cards.length, []);
+                projectLogger.complete(cards.length, cards.length);
+                this.emitProjectComplete(normalizedNumber, {
+                    filesDownloaded: cards.length,
+                    metadata
+                });
+                return {
+                    projectNumber: normalizedNumber,
+                    success: true,
+                    filesDownloaded: cards.length,
+                    totalFiles: cards.length,
+                    errors: [],
+                    metadata
+                };
             }
+            // Download PDF cards using enhanced FileManager
+            const result = await this.fileManager.downloadPDFCards(cards, normalizedNumber, this.sessionManager.getClient(), this.config.rateLimit, (current, total) => {
+                this.emitDownloadProgress(normalizedNumber, current, total, {
+                    fileName: cards[current - 1]?.fileName
+                });
+            });
+            const { successful, failed } = result;
+            const errors = failed.map(f => f.error);
             // Create metadata
-            const metadata = this.createSuccessMetadata(normalizedNumber, cards.length, downloadedFiles.length, errors);
-            if (!this.config.dryRun) {
-                await this.fileManager.saveMetadata(normalizedNumber, metadata);
+            const metadata = this.createSuccessMetadata(normalizedNumber, cards.length, successful.length, errors);
+            await this.fileManager.saveMetadata(normalizedNumber, metadata);
+            projectLogger.complete(successful.length, cards.length);
+            if (failed.length > 0) {
+                projectLogger.warn(`${failed.length} files failed to download`);
             }
-            projectLogger.complete(downloadedFiles.length, cards.length);
             this.emitProjectComplete(normalizedNumber, {
-                filesDownloaded: downloadedFiles.length,
+                filesDownloaded: successful.length,
                 totalFiles: cards.length,
                 errors
             });
             return {
                 projectNumber: normalizedNumber,
-                success: errors.length < cards.length,
-                filesDownloaded: downloadedFiles.length,
+                success: failed.length < cards.length,
+                filesDownloaded: successful.length,
                 totalFiles: cards.length,
                 errors,
                 metadata
@@ -160,6 +165,19 @@ export class DownloadEngine extends ESFEventEmitter {
                 error: error
             });
             throw error;
+        }
+    }
+    /**
+     * Ensure Chrome connection and ESF portal are ready
+     */
+    async ensureConnections() {
+        // Connect to Chrome if not already connected
+        if (!this.sessionManager.isConnected()) {
+            await this.sessionManager.connect();
+        }
+        // Initialize ESF portal if not already done
+        if (!this.esfPortal) {
+            this.esfPortal = new ESFPortal(this.sessionManager.getClient(), this.config.chromePort);
         }
     }
     /**

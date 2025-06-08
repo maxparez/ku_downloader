@@ -1,4 +1,4 @@
-import type { FileInfo, ProjectMetadata } from '../types/index.js';
+import type { FileInfo, ProjectMetadata, ESFCardInfo, CDPClient } from '../types/index.js';
 /**
  * File Manager for ESF Downloader
  * Handles file operations, directory management, and metadata
@@ -74,5 +74,35 @@ export declare class FileManager {
      * Set new base output directory
      */
     setBaseOutputDir(newDir: string): void;
+    /**
+     * Download PDF card using Chrome DevTools Protocol
+     */
+    downloadPDFCard(card: ESFCardInfo, projectNumber: string, client: CDPClient, retryAttempts?: number): Promise<FileInfo>;
+    /**
+     * Download file using Chrome DevTools Protocol
+     */
+    private downloadWithChrome;
+    /**
+     * Download via Chrome navigation (for authenticated downloads)
+     */
+    private downloadViaNavigation;
+    /**
+     * Download multiple PDF cards with progress tracking
+     */
+    downloadPDFCards(cards: ESFCardInfo[], projectNumber: string, client: CDPClient, rateLimit?: number, onProgress?: (current: number, total: number) => void): Promise<{
+        successful: FileInfo[];
+        failed: {
+            card: ESFCardInfo;
+            error: string;
+        }[];
+    }>;
+    /**
+     * Sanitize filename for filesystem
+     */
+    private sanitizeFilename;
+    /**
+     * Sleep utility
+     */
+    private sleep;
 }
 //# sourceMappingURL=FileManager.d.ts.map

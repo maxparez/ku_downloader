@@ -8,6 +8,7 @@ export declare class DownloadEngine extends ESFEventEmitter {
     private projectManager;
     private sessionManager;
     private fileManager;
+    private esfPortal;
     private config;
     private isRunning;
     constructor(config: AppConfig);
@@ -19,6 +20,10 @@ export declare class DownloadEngine extends ESFEventEmitter {
      * Download single project
      */
     downloadProject(projectNumber: string): Promise<DownloadResult>;
+    /**
+     * Ensure Chrome connection and ESF portal are ready
+     */
+    private ensureConnections;
     /**
      * Extract card information from project page
      */

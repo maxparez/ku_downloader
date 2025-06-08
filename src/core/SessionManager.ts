@@ -351,6 +351,16 @@ export class SessionManager extends ESFEventEmitter {
   }
 
   /**
+   * Get CDP client instance
+   */
+  getClient(): CDPClient {
+    if (!this.client) {
+      throw new NetworkError('Chrome client not connected');
+    }
+    return this.client;
+  }
+
+  /**
    * Cleanup resources
    */
   async cleanup(): Promise<void> {

@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
-import { FileError } from '../types/index.js';
+import { FileError, NetworkError } from '../types/index.js';
 import { logger } from '../utils/logger.js';
 /**
  * File Manager for ESF Downloader
@@ -305,6 +305,164 @@ export class FileManager {
     setBaseOutputDir(newDir) {
         this.baseOutputDir = newDir;
         logger.debug(`Base output directory changed to: ${newDir}`);
+    }
+    /**
+     * Download PDF card using Chrome DevTools Protocol
+     */
+    async downloadPDFCard(card, projectNumber, client, retryAttempts = 3) {
+        const projectDir = await this.ensureProjectDirectory(projectNumber);
+        // Sanitize filename
+        const sanitizedFilename = this.sanitizeFilename(card.fileName);
+        const destination = path.join(projectDir, sanitizedFilename);
+        // Check if file already exists and is valid
+        if (await this.fileExists(destination)) {
+            const isValid = await this.validateFile(destination);
+            if (isValid) {
+                logger.debug(`[${projectNumber}] File already exists: ${sanitizedFilename}`);
+                return {
+                    name: sanitizedFilename,
+                    path: destination,
+                    url: card.downloadUrl,
+                    size: await this.getFileSize(destination),
+                    downloaded: true
+                };
+            }
+        }
+        let lastError = null;
+        for (let attempt = 1; attempt <= retryAttempts; attempt++) {
+            try {
+                logger.debug(`[${projectNumber}] Downloading card ${card.cardNumber}/${card.fileName} (attempt ${attempt}/${retryAttempts})`);
+                const fileInfo = await this.downloadWithChrome(card.downloadUrl, destination, client, projectNumber);
+                // Validate downloaded file
+                const isValid = await this.validateFile(destination);
+                if (!isValid) {
+                    throw new Error('Downloaded file validation failed');
+                }
+                logger.debug(`[${projectNumber}] Successfully downloaded: ${card.fileName}`);
+                return fileInfo;
+            }
+            catch (error) {
+                lastError = error;
+                logger.warn(`[${projectNumber}] Download attempt ${attempt} failed: ${lastError.message}`);
+                // Clean up failed download
+                if (await this.fileExists(destination)) {
+                    await fs.unlink(destination).catch(() => { }); // Ignore errors
+                }
+                if (attempt < retryAttempts) {
+                    // Wait before retry (exponential backoff)
+                    const delay = Math.pow(2, attempt) * 1000;
+                    logger.debug(`[${projectNumber}] Waiting ${delay}ms before retry`);
+                    await this.sleep(delay);
+                }
+            }
+        }
+        // All attempts failed
+        throw new FileError(`Failed to download ${card.fileName} after ${retryAttempts} attempts: ${lastError?.message}`, projectNumber, lastError || undefined);
+    }
+    /**
+     * Download file using Chrome DevTools Protocol
+     */
+    async downloadWithChrome(url, destination, client, projectNumber) {
+        try {
+            // Method 1: Try direct navigation download
+            const response = await this.downloadViaNavigation(url, destination, client);
+            if (response) {
+                return response;
+            }
+            // Method 2: Fallback to fetch-based download
+            return await this.downloadFile(url, destination, projectNumber);
+        }
+        catch (error) {
+            throw new NetworkError(`Chrome download failed for ${url}`, projectNumber, error);
+        }
+    }
+    /**
+     * Download via Chrome navigation (for authenticated downloads)
+     */
+    async downloadViaNavigation(url, destination, client) {
+        try {
+            // Enable download domain
+            await client.send('Page.setDownloadBehavior', {
+                behavior: 'allow',
+                downloadPath: path.dirname(destination)
+            });
+            // Navigate to download URL
+            await client.send('Page.navigate', { url });
+            // Wait for potential download completion
+            await this.sleep(3000);
+            // Check if file was downloaded
+            if (await this.fileExists(destination)) {
+                const stats = await fs.stat(destination);
+                return {
+                    name: path.basename(destination),
+                    path: destination,
+                    url,
+                    size: stats.size,
+                    downloaded: true
+                };
+            }
+            return null;
+        }
+        catch (error) {
+            logger.debug('Navigation download failed', undefined, { error: error.message });
+            return null;
+        }
+    }
+    /**
+     * Download multiple PDF cards with progress tracking
+     */
+    async downloadPDFCards(cards, projectNumber, client, rateLimit = 1000, onProgress) {
+        const successful = [];
+        const failed = [];
+        logger.info(`[${projectNumber}] Starting download of ${cards.length} PDF cards`);
+        for (let i = 0; i < cards.length; i++) {
+            const card = cards[i];
+            try {
+                // Rate limiting
+                if (i > 0) {
+                    await this.sleep(rateLimit);
+                }
+                const fileInfo = await this.downloadPDFCard(card, projectNumber, client);
+                successful.push(fileInfo);
+                // Report progress
+                onProgress?.(i + 1, cards.length);
+            }
+            catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                failed.push({ card, error: errorMessage });
+                logger.error(`[${projectNumber}] Failed to download card ${card.cardNumber}`, error);
+            }
+        }
+        logger.info(`[${projectNumber}] Download completed: ${successful.length} successful, ${failed.length} failed`);
+        return { successful, failed };
+    }
+    /**
+     * Sanitize filename for filesystem
+     */
+    sanitizeFilename(filename) {
+        // Remove invalid characters
+        let sanitized = filename.replace(/[<>:"/\\|?*]/g, '_');
+        // Replace multiple underscores with single
+        sanitized = sanitized.replace(/_+/g, '_');
+        // Remove leading/trailing spaces and dots
+        sanitized = sanitized.trim().replace(/^\.+|\.+$/g, '');
+        // Ensure PDF extension
+        if (!sanitized.toLowerCase().endsWith('.pdf')) {
+            sanitized += '.pdf';
+        }
+        // Limit length
+        if (sanitized.length > 200) {
+            const ext = path.extname(sanitized);
+            const base = path.basename(sanitized, ext);
+            sanitized = base.substring(0, 200 - ext.length) + ext;
+        }
+        return sanitized || 'document.pdf';
+    }
+    /**
+     * Sleep utility
+     */
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
 //# sourceMappingURL=FileManager.js.map

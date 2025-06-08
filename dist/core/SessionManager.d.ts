@@ -1,4 +1,4 @@
-import type { SessionInfo, ChromeConnection } from '../types/index.js';
+import type { SessionInfo, ChromeConnection, CDPClient } from '../types/index.js';
 import { ESFEventEmitter } from '../events/EventEmitter.js';
 /**
  * Session Manager for ESF Downloader
@@ -76,6 +76,10 @@ export declare class SessionManager extends ESFEventEmitter {
      * Get Chrome connection details
      */
     getChromeConnection(): ChromeConnection;
+    /**
+     * Get CDP client instance
+     */
+    getClient(): CDPClient;
     /**
      * Cleanup resources
      */
