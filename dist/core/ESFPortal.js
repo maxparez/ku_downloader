@@ -12,13 +12,14 @@ export class ESFPortal {
     currentProject = null;
     viewState = null;
     eventValidation = null;
+    progressCallback;
     constructor(client, port) {
         this.client = client;
         this.chromeUtils = createChromeUtils(client, port);
     }
     /**
      * Navigate to project and extract participant PDFs
-     * Real workflow: ProjectsList -> Filter -> Project Detail -> Click "Podpořené osoby" tab
+     * Optimized workflow: ProjectsList -> Filter -> Project Detail -> Check PDF permission -> Click "Podpořené osoby" tab
      */
     async navigateToProject(projectNumber) {
         try {
@@ -29,14 +30,18 @@ export class ESFPortal {
             // Step 2: Filter by project number (if not already filtered)
             await this.filterByProjectNumber(projectNumber);
             // Step 3: Navigate to project detail
-            await this.navigateToProjectDetail(projectNumber);
-            // Step 4: Click on "Podpořené osoby" tab to show participants
+            const projectId = await this.navigateToProjectDetail(projectNumber);
+            // Step 4: Ensure PDF download permission is enabled
+            await this.ensurePDFDownloadPermission();
+            // Step 5: Click on "Podpořené osoby" tab to show participants
             await this.clickSupportedPersonsTab();
+            // Step 6: Set page size to 50 for more participants
+            await this.setPageSizeTo50();
             logger.info(`[${projectNumber}] Successfully navigated to participants tab`);
             return {
                 baseUrl: 'https://esf2014.esfcr.cz',
-                projectPath: `/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?projektId=76036`,
-                fullUrl: `https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?action=get&projektId=76036`
+                projectPath: `/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?projektId=${projectId}`,
+                fullUrl: `https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?action=get&projektId=${projectId}`
             };
         }
         catch (error) {
@@ -52,28 +57,41 @@ export class ESFPortal {
     async discoverPDFCards(projectNumber) {
         try {
             logger.info(`[${projectNumber}] Discovering participant PDF cards`);
-            // Extract participants list
+            // Extract participants list with full URLs
             const participants = await this.extractParticipantsList();
             if (participants.length === 0) {
                 logger.warn(`[${projectNumber}] No participants found`);
                 return [];
             }
             logger.info(`[${projectNumber}] Found ${participants.length} participants`);
-            // Download PDFs for each participant
+            // Download PDFs for each participant using optimized workflow
             const cards = [];
+            let downloadedCount = 0;
             for (let i = 0; i < participants.length; i++) {
                 const participant = participants[i];
                 try {
+                    logger.info(`[${projectNumber}] Processing participant ${i + 1}/${participants.length}: ${participant.name}`);
                     const pdfCard = await this.downloadParticipantPDF(participant, projectNumber);
                     if (pdfCard) {
                         cards.push(pdfCard);
+                        downloadedCount++;
+                        logger.info(`[${projectNumber}] Downloaded PDF ${downloadedCount} for ${participant.name}`);
+                    }
+                    // Emit progress event
+                    if (this.progressCallback) {
+                        this.progressCallback({
+                            current: i + 1,
+                            total: participants.length,
+                            participant: participant.name,
+                            downloaded: downloadedCount
+                        });
                     }
                 }
                 catch (error) {
                     logger.error(`Failed to download PDF for ${participant.name}`, error);
                 }
             }
-            logger.info(`[${projectNumber}] Successfully downloaded ${cards.length} PDF cards`);
+            logger.info(`[${projectNumber}] Successfully downloaded ${cards.length} PDFs out of ${participants.length} participants`);
             return cards;
         }
         catch (error) {
@@ -114,20 +132,45 @@ export class ESFPortal {
         }
     }
     /**
-     * Navigate to projects list page
+     * Navigate to projects list page and check authentication
      */
     async navigateToProjectsList() {
         const projectsUrl = 'https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy';
         try {
             logger.debug('Navigating to projects list page');
             await this.chromeUtils.navigateAndWait(projectsUrl, 30000);
-            // Verify authentication
-            await this.verifyAuthentication();
-            // Extract ViewState and EventValidation
+            // Check if we were redirected to login page
+            const currentUrl = await this.chromeUtils.getCurrentUrl();
+            const title = await this.chromeUtils.getPageTitle();
+            if (currentUrl.includes('identita.gov.cz') ||
+                currentUrl.includes('login') ||
+                title.toLowerCase().includes('přihlášení') ||
+                title.toLowerCase().includes('login')) {
+                logger.info('User is not authenticated to ESF portal');
+                throw new AuthError(`
+🔐 PŘIHLÁŠENÍ VYŽADOVÁNO
+
+Nejste přihlášeni k ESF portálu. Prosím:
+
+1. Otevřete Chrome a přihlaste se přes portal občana na:
+   https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy
+
+2. Po přihlášení nechte Chrome otevřený a spusťte znovu:
+   npm run download -- --projects ${this.currentProject} --verbose
+
+3. Nebo použijte Chrome v debug módu:
+   google-chrome --remote-debugging-port=9222 --no-sandbox
+   
+Poznámka: Přihlášení přes identita.gov.cz musí být provedeno manuálně.`);
+            }
+            // If we're here, user is authenticated - extract form state
             await this.extractFormState();
-            logger.debug('Successfully loaded projects list page');
+            logger.debug('Successfully loaded projects list page - user authenticated');
         }
         catch (error) {
+            if (error instanceof AuthError) {
+                throw error; // Re-throw authentication errors
+            }
             throw new NetworkError('Failed to navigate to projects list', '', error);
         }
     }
@@ -224,26 +267,104 @@ export class ESFPortal {
               const href = link.href || '';
               
               if (text.includes('${projectNumber}') && href.includes('ProjektDetailPage')) {
+                // Extract project ID from URL before clicking
+                const match = href.match(/projektId=(\d+)/);
+                const projektId = match ? match[1] : null;
+                
                 link.click();
-                return true;
+                return { clicked: true, projektId };
               }
             }
             
-            return false;
+            return { clicked: false };
           })();
         `,
                 returnByValue: true
             });
-            if (!clickResult.result.value) {
+            if (!clickResult.result.value.clicked) {
                 throw new Error(`Project detail link for ${projectNumber} not found`);
             }
             // Wait for project detail page to load
             await this.sleep(7000);
             await this.extractFormState();
             logger.debug(`Successfully navigated to project detail: ${projectNumber}`);
+            return clickResult.result.value.projektId || '76036'; // Default for testing
         }
         catch (error) {
             throw new NetworkError(`Failed to navigate to project detail ${projectNumber}`, projectNumber, error);
+        }
+    }
+    /**
+     * Ensure PDF download permission checkbox is checked and save changes
+     */
+    async ensurePDFDownloadPermission() {
+        try {
+            logger.debug('Checking "Povolit stažení PDF formuláře podpořené osoby" checkbox');
+            const checkResult = await this.client.send('Runtime.evaluate', {
+                expression: `
+          (function() {
+            const checkbox = document.getElementById('projektDetailTabs_Projekt_AllowDownloadPdfFormPO') ||
+                           document.querySelector('input[name*="AllowDownloadPdfFormPO"]');
+            
+            if (checkbox) {
+              const wasChecked = checkbox.checked;
+              if (!wasChecked) {
+                checkbox.checked = true;
+                // Trigger the onclick handler if exists
+                if (checkbox.onclick) {
+                  checkbox.onclick();
+                } else if (window.AllowDownloadPdfFormPOItemClick) {
+                  window.AllowDownloadPdfFormPOItemClick(checkbox);
+                }
+              }
+              return { exists: true, wasChecked, nowChecked: checkbox.checked };
+            }
+            
+            return { exists: false };
+          })();
+        `,
+                returnByValue: true
+            });
+            if (!checkResult.result.value.exists) {
+                logger.warn('PDF download permission checkbox not found - proceeding anyway');
+                return;
+            }
+            if (!checkResult.result.value.wasChecked) {
+                logger.debug('Checkbox "Povolit stažení PDF formuláře podpořené osoby" was not checked - enabled it');
+                // Save the changes by clicking the "Uložit" button
+                const saveResult = await this.client.send('Runtime.evaluate', {
+                    expression: `
+            (function() {
+              const saveButton = document.getElementById('_Save') ||
+                             document.querySelector('button[name="ctl00$ctl00$_Save"]') ||
+                             document.querySelector('button[value="Uložit"]');
+              
+              if (saveButton && !saveButton.disabled) {
+                saveButton.click();
+                return { clicked: true, buttonText: saveButton.textContent.trim() };
+              }
+              
+              return { clicked: false, reason: saveButton ? 'disabled' : 'not found' };
+            })();
+          `,
+                    returnByValue: true
+                });
+                if (saveResult.result.value.clicked) {
+                    logger.debug('Successfully clicked "Uložit" button to save PDF permission');
+                    // Wait for save operation to complete
+                    await this.sleep(3000);
+                }
+                else {
+                    logger.warn(`Could not click save button: ${saveResult.result.value.reason}`);
+                }
+            }
+            else {
+                logger.debug('PDF download permission already enabled');
+            }
+        }
+        catch (error) {
+            logger.warn(`Failed to check PDF download permission: ${error.message}`);
+            // Non-critical error - continue anyway
         }
     }
     /**
@@ -257,32 +378,99 @@ export class ESFPortal {
           (function() {
             const tab = document.querySelector('a[href="#projektDetailTabs_ctl337"]');
             if (tab && tab.textContent.includes('Podpořené osoby')) {
-              tab.click();
-              return true;
+              // Check if already active
+              const isActive = tab.getAttribute('aria-expanded') === 'true';
+              if (!isActive) {
+                tab.click();
+              }
+              return { clicked: !isActive, wasActive: isActive };
             }
-            return false;
+            return { clicked: false };
           })();
         `,
                 returnByValue: true
             });
-            if (!clickResult.result.value) {
+            if (!clickResult.result.value.clicked && !clickResult.result.value.wasActive) {
                 throw new Error('Could not find or click "Podpořené osoby" tab');
             }
-            // Wait for tab content to load
-            await this.sleep(3000);
-            logger.debug('Successfully clicked Podpořené osoby tab');
+            if (clickResult.result.value.clicked) {
+                // Wait for tab content to load
+                await this.sleep(3000);
+                logger.debug('Successfully clicked Podpořené osoby tab');
+            }
+            else {
+                logger.debug('Podpořené osoby tab was already active');
+            }
         }
         catch (error) {
             throw new NetworkError('Failed to click supported persons tab', '', error);
         }
     }
     /**
-     * Verify user is authenticated, throw error if not
+     * Set page size to 50 to show more participants
      */
-    async verifyAuthentication() {
-        const isAuthenticated = await this.checkAuthentication();
-        if (!isAuthenticated) {
-            throw new AuthError('User authentication required. Please login manually to identita.gov.cz');
+    async setPageSizeTo50() {
+        try {
+            logger.debug('Setting page size to 50');
+            const setResult = await this.client.send('Runtime.evaluate', {
+                expression: `
+          (function() {
+            // Find visible page size select in active tab
+            const selects = document.querySelectorAll('select.acgp-pageSize');
+            
+            for (let select of selects) {
+              const style = window.getComputedStyle(select);
+              const parent = select.closest('.tab-pane');
+              
+              // Check if this select is visible
+              if (style.display !== 'none' && 
+                  (!parent || window.getComputedStyle(parent).display !== 'none')) {
+                
+                const originalValue = select.value;
+                
+                // Check if already set to 50
+                if (originalValue === '50') {
+                  return { success: true, alreadySet: true, originalValue };
+                }
+                
+                // Set to 50
+                select.value = '50';
+                
+                // Trigger change event
+                const changeEvent = new Event('change', { bubbles: true });
+                select.dispatchEvent(changeEvent);
+                
+                // Also trigger onchange if exists
+                if (select.onchange) {
+                  select.onchange();
+                }
+                
+                return { success: true, alreadySet: false, originalValue, newValue: select.value };
+              }
+            }
+            
+            return { success: false, reason: 'No visible page size select found' };
+          })();
+        `,
+                returnByValue: true
+            });
+            if (setResult.result.value.success) {
+                if (setResult.result.value.alreadySet) {
+                    logger.debug('Page size already set to 50');
+                }
+                else {
+                    logger.debug(`Page size changed from ${setResult.result.value.originalValue} to 50`);
+                    // Wait for page to reload with more participants
+                    await this.sleep(5000);
+                }
+            }
+            else {
+                logger.warn('Could not set page size to 50 - continuing with default');
+            }
+        }
+        catch (error) {
+            logger.warn(`Failed to set page size: ${error.message}`);
+            // Non-critical error - continue anyway
         }
     }
     /**
@@ -362,95 +550,78 @@ export class ESFPortal {
         }
     }
     /**
-     * Download PDF for a specific participant
+     * Download PDF for a specific participant using optimized direct navigation
      */
     async downloadParticipantPDF(participant, projectNumber) {
         try {
-            logger.debug(`Downloading PDF for participant: ${participant.name}`);
-            // Navigate to participant detail page
-            if (participant.detailUrl) {
-                await this.chromeUtils.navigateAndWait(participant.detailUrl, 10000);
+            logger.debug(`Downloading PDF for participant: ${participant.name} (ID: ${participant.id})`);
+            // Direct navigation to participant detail page
+            if (!participant.detailUrl) {
+                throw new Error(`No detail URL for participant ${participant.name}`);
             }
-            else {
-                // Click on participant row to open detail
-                const clickResult = await this.client.send('Runtime.evaluate', {
-                    expression: `
-            const rows = document.querySelectorAll('tr[data-key="${participant.id}"], tr');
-            for (let row of rows) {
-              if (row.textContent && row.textContent.includes('${participant.name}')) {
-                const link = row.querySelector('a') || row;
-                link.click();
-                break;
-              }
-            }
-            true;
-          `,
-                    returnByValue: true
-                });
-                await this.chromeUtils.waitForPageLoad(10000);
-            }
-            // Extract new form state
-            await this.extractFormState();
-            // Trigger PDF download (based on traffic analysis)
-            const downloadUrl = await this.triggerPDFDownload(participant.name);
-            if (downloadUrl) {
-                return {
-                    participantName: participant.name,
-                    participantId: participant.id,
-                    downloadUrl,
-                    fileName: this.generateFileName(participant.name, participant.id),
-                    projectNumber
-                };
-            }
-            return null;
-        }
-        catch (error) {
-            logger.error(`Failed to download PDF for ${participant.name}`, error);
-            return null;
-        }
-    }
-    /**
-     * Trigger PDF download using ASP.NET postback (based on traffic analysis)
-     */
-    async triggerPDFDownload(participantName) {
-        try {
-            if (!this.viewState || !this.eventValidation) {
-                throw new Error('Missing ViewState or EventValidation for PDF download');
-            }
-            // Trigger PDF download with __EVENTTARGET=ctl00$ctl00$_TiskDoPdf
-            const downloadResult = await this.client.send('Runtime.evaluate', {
+            // Ensure full URL
+            const fullUrl = participant.detailUrl.includes('http') ?
+                participant.detailUrl :
+                `https://esf2014.esfcr.cz${participant.detailUrl}`;
+            logger.debug(`Navigating directly to: ${fullUrl}`);
+            // Navigate using window.location for speed
+            await this.client.send('Runtime.evaluate', {
+                expression: `window.location.href = '${fullUrl}';`,
+                returnByValue: true
+            });
+            // Wait for page load
+            await this.sleep(6000);
+            // Verify we're on correct page
+            const verifyResult = await this.client.send('Runtime.evaluate', {
                 expression: `
-          // Submit form with PDF download event target
-          const form = document.forms[0];
-          if (form) {
-            // Remove existing event target if any
-            const existingTarget = form.querySelector('input[name="__EVENTTARGET"]');
-            if (existingTarget) existingTarget.remove();
-            
-            const eventTarget = document.createElement('input');
-            eventTarget.type = 'hidden';
-            eventTarget.name = '__EVENTTARGET';
-            eventTarget.value = 'ctl00$ctl00$_TiskDoPdf';
-            form.appendChild(eventTarget);
-            
-            form.submit();
-            true;
-          } else {
-            false;
-          }
+          (function() {
+            return {
+              currentUrl: window.location.href,
+              hasCorrectId: window.location.href.includes('${participant.id}'),
+              title: document.title,
+              hasPDFButton: !!document.getElementById('_TiskDoPdf')
+            };
+          })();
         `,
                 returnByValue: true
             });
-            if (!downloadResult.result.value) {
-                throw new Error('Could not submit PDF download form');
+            if (!verifyResult.result.value.hasCorrectId) {
+                throw new Error(`Navigation failed - not on participant ${participant.id} page`);
             }
-            // Wait for download to start
-            await this.sleep(3000);
-            // Return a mock download URL (in real scenario, the PDF should be downloaded to browser downloads)
-            return `pdf_download_${Date.now()}.pdf`;
+            if (!verifyResult.result.value.hasPDFButton) {
+                throw new Error('PDF download button not found on page');
+            }
+            // Click PDF download button
+            const pdfResult = await this.client.send('Runtime.evaluate', {
+                expression: `
+          (function() {
+            const button = document.getElementById('_TiskDoPdf');
+            if (button && !button.disabled) {
+              button.click();
+              return { clicked: true, buttonText: button.textContent.trim() };
+            }
+            return { clicked: false, reason: button ? 'disabled' : 'not found' };
+          })();
+        `,
+                returnByValue: true
+            });
+            if (!pdfResult.result.value.clicked) {
+                throw new Error(`Could not click PDF button: ${pdfResult.result.value.reason}`);
+            }
+            logger.debug(`PDF button clicked for ${participant.name}`);
+            // Wait for PDF download
+            await this.sleep(7000);
+            // Return card info
+            return {
+                participantName: participant.name,
+                participantId: participant.id,
+                downloadUrl: fullUrl, // Use the actual detail URL
+                fileName: this.generateFileName(participant.name, participant.id),
+                projectNumber
+            };
         }
         catch (error) {
-            logger.error(`Failed to trigger PDF download for ${participantName}`, error);
+            logger.error(`Failed to download PDF for ${participant.name}`, error);
             return null;
         }
     }
@@ -473,6 +644,12 @@ export class ESFPortal {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     /**
+     * Set progress callback for download tracking
+     */
+    setProgressCallback(callback) {
+        this.progressCallback = callback;
+    }
+    /**
      * Get current project number
      */
     getCurrentProject() {
@@ -485,6 +662,7 @@ export class ESFPortal {
         this.currentProject = null;
         this.viewState = null;
         this.eventValidation = null;
+        this.progressCallback = undefined;
     }
 }
 //# sourceMappingURL=ESFPortal.js.map

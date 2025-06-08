@@ -184,8 +184,8 @@ class ESFDownloaderCLI {
             }
         }
         else if (error instanceof AuthError) {
-            console.error(`\n🔐 Authentication Error: ${error.message}`);
-            console.error('Please ensure you are logged in to identita.gov.cz in your Chrome session.');
+            console.error(`\n${error.message}`);
+            console.error('\n👆 Postupujte podle pokynů výše a poté spusťte příkaz znovu.');
         }
         else {
             // Unknown error

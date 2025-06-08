@@ -25,14 +25,6 @@ export declare class DownloadEngine extends ESFEventEmitter {
      */
     private ensureConnections;
     /**
-     * Extract card information from project page
-     */
-    private extractCardInfo;
-    /**
-     * Download individual card
-     */
-    private downloadCard;
-    /**
      * Prepare projects for download
      */
     private prepareProjects;

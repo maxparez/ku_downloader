@@ -173,7 +173,7 @@ export class ESFPortal {
   }
 
   /**
-   * Navigate to projects list page
+   * Navigate to projects list page and check authentication
    */
   private async navigateToProjectsList(): Promise<void> {
     const projectsUrl = 'https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy';
@@ -182,14 +182,41 @@ export class ESFPortal {
       logger.debug('Navigating to projects list page');
       await this.chromeUtils.navigateAndWait(projectsUrl, 30000);
       
-      // Verify authentication
-      await this.verifyAuthentication();
+      // Check if we were redirected to login page
+      const currentUrl = await this.chromeUtils.getCurrentUrl();
+      const title = await this.chromeUtils.getPageTitle();
       
-      // Extract ViewState and EventValidation
+      if (currentUrl.includes('identita.gov.cz') || 
+          currentUrl.includes('login') ||
+          title.toLowerCase().includes('přihlášení') ||
+          title.toLowerCase().includes('login')) {
+        
+        logger.info('User is not authenticated to ESF portal');
+        throw new AuthError(`
+🔐 PŘIHLÁŠENÍ VYŽADOVÁNO
+
+Nejste přihlášeni k ESF portálu. Prosím:
+
+1. Otevřete Chrome a přihlaste se přes portal občana na:
+   https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy
+
+2. Po přihlášení nechte Chrome otevřený a spusťte znovu:
+   npm run download -- --projects ${this.currentProject} --verbose
+
+3. Nebo použijte Chrome v debug módu:
+   google-chrome --remote-debugging-port=9222 --no-sandbox
+   
+Poznámka: Přihlášení přes identita.gov.cz musí být provedeno manuálně.`);
+      }
+      
+      // If we're here, user is authenticated - extract form state
       await this.extractFormState();
       
-      logger.debug('Successfully loaded projects list page');
+      logger.debug('Successfully loaded projects list page - user authenticated');
     } catch (error) {
+      if (error instanceof AuthError) {
+        throw error; // Re-throw authentication errors
+      }
       throw new NetworkError('Failed to navigate to projects list', '', error as Error);
     }
   }
@@ -512,18 +539,6 @@ export class ESFPortal {
     }
   }
 
-  /**
-   * Verify user is authenticated, throw error if not
-   */
-  private async verifyAuthentication(): Promise<void> {
-    const isAuthenticated = await this.checkAuthentication();
-    
-    if (!isAuthenticated) {
-      throw new AuthError(
-        'User authentication required. Please login manually to identita.gov.cz'
-      );
-    }
-  }
 
   /**
    * Extract ASP.NET ViewState and EventValidation from current page

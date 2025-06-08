@@ -10,10 +10,11 @@ export declare class ESFPortal {
     private currentProject;
     private viewState;
     private eventValidation;
+    private progressCallback?;
     constructor(client: CDPClient, port: number);
     /**
      * Navigate to project and extract participant PDFs
-     * Real workflow: ProjectsList -> Filter -> Project Detail -> Click "Podpořené osoby" tab
+     * Optimized workflow: ProjectsList -> Filter -> Project Detail -> Check PDF permission -> Click "Podpořené osoby" tab
      */
     navigateToProject(projectNumber: string): Promise<ESFProjectUrl>;
     /**
@@ -25,7 +26,7 @@ export declare class ESFPortal {
      */
     checkAuthentication(): Promise<boolean>;
     /**
-     * Navigate to projects list page
+     * Navigate to projects list page and check authentication
      */
     private navigateToProjectsList;
     /**
@@ -41,13 +42,17 @@ export declare class ESFPortal {
      */
     private navigateToProjectDetail;
     /**
+     * Ensure PDF download permission checkbox is checked and save changes
+     */
+    private ensurePDFDownloadPermission;
+    /**
      * Click on "Podpořené osoby" tab to show participants
      */
     private clickSupportedPersonsTab;
     /**
-     * Verify user is authenticated, throw error if not
+     * Set page size to 50 to show more participants
      */
-    private verifyAuthentication;
+    private setPageSizeTo50;
     /**
      * Extract ASP.NET ViewState and EventValidation from current page
      */
@@ -57,13 +62,9 @@ export declare class ESFPortal {
      */
     private extractParticipantsList;
     /**
-     * Download PDF for a specific participant
+     * Download PDF for a specific participant using optimized direct navigation
      */
     private downloadParticipantPDF;
-    /**
-     * Trigger PDF download using ASP.NET postback (based on traffic analysis)
-     */
-    private triggerPDFDownload;
     /**
      * Generate safe filename for participant PDF
      */
@@ -72,6 +73,15 @@ export declare class ESFPortal {
      * Sleep utility
      */
     private sleep;
+    /**
+     * Set progress callback for download tracking
+     */
+    setProgressCallback(callback: (progress: {
+        current: number;
+        total: number;
+        participant: string;
+        downloaded: number;
+    }) => void): void;
     /**
      * Get current project number
      */
