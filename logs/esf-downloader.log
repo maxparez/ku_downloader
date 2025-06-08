@@ -173,3 +173,170 @@
 {"error":{"message":"Failed to navigate to projects list","name":"NetworkError","stack":"NetworkError: Failed to navigate to projects list\n    at ESFPortal.navigateToProjectsList (file:///root/vyvoj_sw/ku_downloader/dist/core/ESFPortal.js:149:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async ESFPortal.navigateToProject (file:///root/vyvoj_sw/ku_downloader/dist/core/ESFPortal.js:29:13)\n    at async DownloadEngine.downloadProject (file:///root/vyvoj_sw/ku_downloader/dist/core/DownloadEngine.js:98:13)\n    at async DownloadEngine.downloadProjects (file:///root/vyvoj_sw/ku_downloader/dist/core/DownloadEngine.js:49:36)\n    at async ESFDownloaderCLI.run (file:///root/vyvoj_sw/ku_downloader/dist/interfaces/cli/index.js:39:29)"},"level":"error","message":"Project 0002799 failed","projectNumber":"0002799","timestamp":"2025-06-08 11:33:03"}
 {"level":"info","message":"Download process completed: 0/1 successful","timestamp":"2025-06-08 11:33:04"}
 {"level":"warn","message":"Disconnected from Chrome debug session","timestamp":"2025-06-08 11:33:04"}
+{"level":"info","message":"Starting download process for 1 projects","projects":["2799"],"timestamp":"2025-06-08 11:37:31"}
+{"duplicatesRemoved":0,"level":"info","message":"Prepared 1 projects for download","timestamp":"2025-06-08 11:37:31","total":1,"unique":1}
+{"level":"info","message":"Connecting to Chrome on port 9222","timestamp":"2025-06-08 11:37:31"}
+{"level":"info","message":"Available Chrome tabs (1):","timestamp":"2025-06-08 11:37:31"}
+{"level":"info","message":"  Tab 3CFB5A921A5EA3C20329008085EC9AAC: Přihlášení - www.esfcr.cz - https://www.esfcr.cz/web/esf/login?redirect=https%3a%2f%2fesf2014.esfcr.cz%2fPub","timestamp":"2025-06-08 11:37:31"}
+{"level":"info","message":"Found ESF-related tab: Přihlášení - www.esfcr.cz - https://www.esfcr.cz/web/esf/login?redirect=https%3a%2f%2fesf2014.esfcr.cz%2fPublicPortal%2fViews%2fProjekty%2fProjektSeznamPage.aspx%3faction%3dgetMy","timestamp":"2025-06-08 11:37:31"}
+{"level":"info","message":"Connecting to specific tab: 3CFB5A921A5EA3C20329008085EC9AAC - https://www.esfcr.cz/web/esf/login?redirect=https%3a%2f%2fesf2014.esfcr.cz%2fPublicPortal%2fViews%2fProjekty%2fProjektSeznamPage.aspx%3faction%3dgetMy","timestamp":"2025-06-08 11:37:31"}
+{"chromePort":9222,"level":"info","message":"Connected to Chrome debug session","timestamp":"2025-06-08 11:37:31"}
+{"level":"info","message":"Chrome connection established","timestamp":"2025-06-08 11:37:31"}
+{"level":"info","message":"Starting project download","projectNumber":"0002799","timestamp":"2025-06-08 11:37:31"}
+{"level":"info","message":"Navigating to ESF portal and setting up project page","projectNumber":"0002799","timestamp":"2025-06-08 11:37:31"}
+{"level":"info","message":"[0002799] Starting ESF portal navigation","timestamp":"2025-06-08 11:37:31"}
+{"level":"info","message":"User is not authenticated to ESF portal","timestamp":"2025-06-08 11:37:32"}
+{"error":{"message":"\n🔐 PŘIHLÁŠENÍ VYŽADOVÁNO\n\nNejste přihlášeni k ESF portálu. Prosím:\n\n1. Otevřete Chrome a přihlaste se přes portal občana na:\n   https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy\n\n2. Po přihlášení nechte Chrome otevřený a spusťte znovu:\n   npm run download -- --projects 0002799 --verbose\n\n3. Nebo použijte Chrome v debug módu:\n   google-chrome --remote-debugging-port=9222 --no-sandbox\n   \nPoznámka: Přihlášení přes identita.gov.cz musí být provedeno manuálně.","name":"AuthError","stack":"AuthError: \n🔐 PŘIHLÁŠENÍ VYŽADOVÁNO\n\nNejste přihlášeni k ESF portálu. Prosím:\n\n1. Otevřete Chrome a přihlaste se přes portal občana na:\n   https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy\n\n2. Po přihlášení nechte Chrome otevřený a spusťte znovu:\n   npm run download -- --projects 0002799 --verbose\n\n3. Nebo použijte Chrome v debug módu:\n   google-chrome --remote-debugging-port=9222 --no-sandbox\n   \nPoznámka: Přihlášení přes identita.gov.cz musí být provedeno manuálně.\n    at ESFPortal.navigateToProjectsList (file:///root/vyvoj_sw/ku_downloader/dist/core/ESFPortal.js:150:23)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async ESFPortal.navigateToProject (file:///root/vyvoj_sw/ku_downloader/dist/core/ESFPortal.js:29:13)\n    at async DownloadEngine.downloadProject (file:///root/vyvoj_sw/ku_downloader/dist/core/DownloadEngine.js:98:13)\n    at async DownloadEngine.downloadProjects (file:///root/vyvoj_sw/ku_downloader/dist/core/DownloadEngine.js:49:36)\n    at async ESFDownloaderCLI.run (file:///root/vyvoj_sw/ku_downloader/dist/interfaces/cli/index.js:39:29)"},"level":"error","message":"Project download failed","projectNumber":"0002799","timestamp":"2025-06-08 11:37:32"}
+{"error":{"message":"\n🔐 PŘIHLÁŠENÍ VYŽADOVÁNO\n\nNejste přihlášeni k ESF portálu. Prosím:\n\n1. Otevřete Chrome a přihlaste se přes portal občana na:\n   https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy\n\n2. Po přihlášení nechte Chrome otevřený a spusťte znovu:\n   npm run download -- --projects 0002799 --verbose\n\n3. Nebo použijte Chrome v debug módu:\n   google-chrome --remote-debugging-port=9222 --no-sandbox\n   \nPoznámka: Přihlášení přes identita.gov.cz musí být provedeno manuálně.","name":"AuthError","stack":"AuthError: \n🔐 PŘIHLÁŠENÍ VYŽADOVÁNO\n\nNejste přihlášeni k ESF portálu. Prosím:\n\n1. Otevřete Chrome a přihlaste se přes portal občana na:\n   https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy\n\n2. Po přihlášení nechte Chrome otevřený a spusťte znovu:\n   npm run download -- --projects 0002799 --verbose\n\n3. Nebo použijte Chrome v debug módu:\n   google-chrome --remote-debugging-port=9222 --no-sandbox\n   \nPoznámka: Přihlášení přes identita.gov.cz musí být provedeno manuálně.\n    at ESFPortal.navigateToProjectsList (file:///root/vyvoj_sw/ku_downloader/dist/core/ESFPortal.js:150:23)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async ESFPortal.navigateToProject (file:///root/vyvoj_sw/ku_downloader/dist/core/ESFPortal.js:29:13)\n    at async DownloadEngine.downloadProject (file:///root/vyvoj_sw/ku_downloader/dist/core/DownloadEngine.js:98:13)\n    at async DownloadEngine.downloadProjects (file:///root/vyvoj_sw/ku_downloader/dist/core/DownloadEngine.js:49:36)\n    at async ESFDownloaderCLI.run (file:///root/vyvoj_sw/ku_downloader/dist/interfaces/cli/index.js:39:29)"},"level":"error","message":"Project 0002799 failed","projectNumber":"0002799","timestamp":"2025-06-08 11:37:32"}
+{"level":"info","message":"Download process completed: 0/1 successful","timestamp":"2025-06-08 11:37:33"}
+{"level":"warn","message":"Disconnected from Chrome debug session","timestamp":"2025-06-08 11:37:33"}
+{"level":"info","message":"Starting download process for 1 projects","projects":["2799"],"timestamp":"2025-06-08 11:38:37"}
+{"duplicatesRemoved":0,"level":"info","message":"Prepared 1 projects for download","timestamp":"2025-06-08 11:38:37","total":1,"unique":1}
+{"level":"info","message":"Connecting to Chrome on port 9222","timestamp":"2025-06-08 11:38:37"}
+{"level":"info","message":"Available Chrome tabs (1):","timestamp":"2025-06-08 11:38:37"}
+{"level":"info","message":"  Tab 3136656A9835B61F6604BA041BE3FCB7: New Tab - chrome://newtab/","timestamp":"2025-06-08 11:38:37"}
+{"chromePort":9222,"level":"info","message":"Connected to Chrome debug session","timestamp":"2025-06-08 11:38:37"}
+{"level":"info","message":"Chrome connection established","timestamp":"2025-06-08 11:38:37"}
+{"level":"info","message":"Starting project download","projectNumber":"0002799","timestamp":"2025-06-08 11:38:37"}
+{"level":"info","message":"Navigating to ESF portal and setting up project page","projectNumber":"0002799","timestamp":"2025-06-08 11:38:37"}
+{"level":"info","message":"[0002799] Starting ESF portal navigation","timestamp":"2025-06-08 11:38:37"}
+{"level":"info","message":"User is not authenticated to ESF portal","timestamp":"2025-06-08 11:38:39"}
+{"error":{"message":"\n🔐 PŘIHLÁŠENÍ VYŽADOVÁNO\n\nNejste přihlášeni k ESF portálu. Prosím:\n\n1. Otevřete Chrome a přihlaste se přes portal občana na:\n   https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy\n\n2. Po přihlášení nechte Chrome otevřený a spusťte znovu:\n   npm run download -- --projects 0002799 --verbose\n\n3. Nebo použijte Chrome v debug módu:\n   google-chrome --remote-debugging-port=9222 --no-sandbox\n   \nPoznámka: Přihlášení přes identita.gov.cz musí být provedeno manuálně.","name":"AuthError","stack":"AuthError: \n🔐 PŘIHLÁŠENÍ VYŽADOVÁNO\n\nNejste přihlášeni k ESF portálu. Prosím:\n\n1. Otevřete Chrome a přihlaste se přes portal občana na:\n   https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy\n\n2. Po přihlášení nechte Chrome otevřený a spusťte znovu:\n   npm run download -- --projects 0002799 --verbose\n\n3. Nebo použijte Chrome v debug módu:\n   google-chrome --remote-debugging-port=9222 --no-sandbox\n   \nPoznámka: Přihlášení přes identita.gov.cz musí být provedeno manuálně.\n    at ESFPortal.navigateToProjectsList (file:///root/vyvoj_sw/ku_downloader/dist/core/ESFPortal.js:150:23)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async ESFPortal.navigateToProject (file:///root/vyvoj_sw/ku_downloader/dist/core/ESFPortal.js:29:13)\n    at async DownloadEngine.downloadProject (file:///root/vyvoj_sw/ku_downloader/dist/core/DownloadEngine.js:98:13)\n    at async DownloadEngine.downloadProjects (file:///root/vyvoj_sw/ku_downloader/dist/core/DownloadEngine.js:49:36)\n    at async ESFDownloaderCLI.run (file:///root/vyvoj_sw/ku_downloader/dist/interfaces/cli/index.js:39:29)"},"level":"error","message":"Project download failed","projectNumber":"0002799","timestamp":"2025-06-08 11:38:39"}
+{"error":{"message":"\n🔐 PŘIHLÁŠENÍ VYŽADOVÁNO\n\nNejste přihlášeni k ESF portálu. Prosím:\n\n1. Otevřete Chrome a přihlaste se přes portal občana na:\n   https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy\n\n2. Po přihlášení nechte Chrome otevřený a spusťte znovu:\n   npm run download -- --projects 0002799 --verbose\n\n3. Nebo použijte Chrome v debug módu:\n   google-chrome --remote-debugging-port=9222 --no-sandbox\n   \nPoznámka: Přihlášení přes identita.gov.cz musí být provedeno manuálně.","name":"AuthError","stack":"AuthError: \n🔐 PŘIHLÁŠENÍ VYŽADOVÁNO\n\nNejste přihlášeni k ESF portálu. Prosím:\n\n1. Otevřete Chrome a přihlaste se přes portal občana na:\n   https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektSeznamPage.aspx?action=getMy\n\n2. Po přihlášení nechte Chrome otevřený a spusťte znovu:\n   npm run download -- --projects 0002799 --verbose\n\n3. Nebo použijte Chrome v debug módu:\n   google-chrome --remote-debugging-port=9222 --no-sandbox\n   \nPoznámka: Přihlášení přes identita.gov.cz musí být provedeno manuálně.\n    at ESFPortal.navigateToProjectsList (file:///root/vyvoj_sw/ku_downloader/dist/core/ESFPortal.js:150:23)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async ESFPortal.navigateToProject (file:///root/vyvoj_sw/ku_downloader/dist/core/ESFPortal.js:29:13)\n    at async DownloadEngine.downloadProject (file:///root/vyvoj_sw/ku_downloader/dist/core/DownloadEngine.js:98:13)\n    at async DownloadEngine.downloadProjects (file:///root/vyvoj_sw/ku_downloader/dist/core/DownloadEngine.js:49:36)\n    at async ESFDownloaderCLI.run (file:///root/vyvoj_sw/ku_downloader/dist/interfaces/cli/index.js:39:29)"},"level":"error","message":"Project 0002799 failed","projectNumber":"0002799","timestamp":"2025-06-08 11:38:39"}
+{"level":"info","message":"Download process completed: 0/1 successful","timestamp":"2025-06-08 11:38:40"}
+{"level":"warn","message":"Disconnected from Chrome debug session","timestamp":"2025-06-08 11:38:40"}
+{"level":"info","message":"Starting download process for 1 projects","projects":["2799"],"timestamp":"2025-06-08 11:40:13"}
+{"duplicatesRemoved":0,"level":"info","message":"Prepared 1 projects for download","timestamp":"2025-06-08 11:40:13","total":1,"unique":1}
+{"level":"info","message":"Connecting to Chrome on port 9222","timestamp":"2025-06-08 11:40:13"}
+{"level":"info","message":"Available Chrome tabs (1):","timestamp":"2025-06-08 11:40:13"}
+{"level":"info","message":"  Tab 3136656A9835B61F6604BA041BE3FCB7: Domovská stránka - www.esfcr.cz - https://www.esfcr.cz/welcome","timestamp":"2025-06-08 11:40:13"}
+{"level":"info","message":"Found ESF-related tab: Domovská stránka - www.esfcr.cz - https://www.esfcr.cz/welcome","timestamp":"2025-06-08 11:40:13"}
+{"level":"info","message":"Connecting to specific tab: 3136656A9835B61F6604BA041BE3FCB7 - https://www.esfcr.cz/welcome","timestamp":"2025-06-08 11:40:13"}
+{"chromePort":9222,"level":"info","message":"Connected to Chrome debug session","timestamp":"2025-06-08 11:40:13"}
+{"level":"info","message":"Chrome connection established","timestamp":"2025-06-08 11:40:13"}
+{"level":"info","message":"Starting project download","projectNumber":"0002799","timestamp":"2025-06-08 11:40:13"}
+{"level":"info","message":"Navigating to ESF portal and setting up project page","projectNumber":"0002799","timestamp":"2025-06-08 11:40:13"}
+{"level":"info","message":"[0002799] Starting ESF portal navigation","timestamp":"2025-06-08 11:40:13"}
+{"level":"info","message":"[0002799] Successfully navigated to participants tab","timestamp":"2025-06-08 11:40:37"}
+{"level":"info","message":"Starting automated PDF discovery and download","projectNumber":"0002799","timestamp":"2025-06-08 11:40:37"}
+{"level":"info","message":"[0002799] Discovering participant PDF cards","timestamp":"2025-06-08 11:40:37"}
+{"level":"info","message":"[0002799] Found 25 participants","timestamp":"2025-06-08 11:40:37"}
+{"level":"info","message":"[0002799] Processing participant 1/25: Michal","timestamp":"2025-06-08 11:40:37"}
+{"level":"info","message":"[0002799] Downloaded PDF 1 for Michal","timestamp":"2025-06-08 11:40:50"}
+{"level":"info","message":"[0002799] Processing participant 2/25: Daniela","timestamp":"2025-06-08 11:40:50"}
+{"level":"info","message":"[0002799] Downloaded PDF 2 for Daniela","timestamp":"2025-06-08 11:41:03"}
+{"level":"info","message":"[0002799] Processing participant 3/25: Beata","timestamp":"2025-06-08 11:41:03"}
+{"level":"info","message":"[0002799] Downloaded PDF 3 for Beata","timestamp":"2025-06-08 11:41:18"}
+{"level":"info","message":"[0002799] Processing participant 4/25: Jaromír","timestamp":"2025-06-08 11:41:18"}
+{"level":"info","message":"[0002799] Downloaded PDF 4 for Jaromír","timestamp":"2025-06-08 11:41:31"}
+{"level":"info","message":"[0002799] Processing participant 5/25: Hana","timestamp":"2025-06-08 11:41:31"}
+{"level":"info","message":"[0002799] Downloaded PDF 5 for Hana","timestamp":"2025-06-08 11:41:46"}
+{"level":"info","message":"[0002799] Processing participant 6/25: Martina","timestamp":"2025-06-08 11:41:46"}
+{"level":"info","message":"[0002799] Downloaded PDF 6 for Martina","timestamp":"2025-06-08 11:41:59"}
+{"level":"info","message":"[0002799] Processing participant 7/25: Roman","timestamp":"2025-06-08 11:41:59"}
+{"level":"info","message":"[0002799] Downloaded PDF 7 for Roman","timestamp":"2025-06-08 11:42:12"}
+{"level":"info","message":"[0002799] Processing participant 8/25: Jana","timestamp":"2025-06-08 11:42:12"}
+{"level":"info","message":"[0002799] Downloaded PDF 8 for Jana","timestamp":"2025-06-08 11:42:27"}
+{"level":"info","message":"[0002799] Processing participant 9/25: Bohuslav","timestamp":"2025-06-08 11:42:27"}
+{"level":"info","message":"[0002799] Downloaded PDF 9 for Bohuslav","timestamp":"2025-06-08 11:42:40"}
+{"level":"info","message":"[0002799] Processing participant 10/25: Eva","timestamp":"2025-06-08 11:42:40"}
+{"level":"info","message":"[0002799] Downloaded PDF 10 for Eva","timestamp":"2025-06-08 11:42:55"}
+{"level":"info","message":"[0002799] Processing participant 11/25: Taťána","timestamp":"2025-06-08 11:42:55"}
+{"level":"info","message":"[0002799] Downloaded PDF 11 for Taťána","timestamp":"2025-06-08 11:43:08"}
+{"level":"info","message":"[0002799] Processing participant 12/25: Jana","timestamp":"2025-06-08 11:43:08"}
+{"level":"info","message":"[0002799] Downloaded PDF 12 for Jana","timestamp":"2025-06-08 11:43:21"}
+{"level":"info","message":"[0002799] Processing participant 13/25: Ivona","timestamp":"2025-06-08 11:43:21"}
+{"level":"info","message":"[0002799] Downloaded PDF 13 for Ivona","timestamp":"2025-06-08 11:43:36"}
+{"level":"info","message":"[0002799] Processing participant 14/25: Eva","timestamp":"2025-06-08 11:43:36"}
+{"level":"info","message":"[0002799] Downloaded PDF 14 for Eva","timestamp":"2025-06-08 11:43:49"}
+{"level":"info","message":"[0002799] Processing participant 15/25: Veronika","timestamp":"2025-06-08 11:43:49"}
+{"level":"info","message":"[0002799] Downloaded PDF 15 for Veronika","timestamp":"2025-06-08 11:44:04"}
+{"level":"info","message":"[0002799] Processing participant 16/25: Hana","timestamp":"2025-06-08 11:44:04"}
+{"level":"info","message":"[0002799] Downloaded PDF 16 for Hana","timestamp":"2025-06-08 11:44:17"}
+{"level":"info","message":"[0002799] Processing participant 17/25: Martina","timestamp":"2025-06-08 11:44:17"}
+{"level":"info","message":"[0002799] Downloaded PDF 17 for Martina","timestamp":"2025-06-08 11:44:30"}
+{"level":"info","message":"[0002799] Processing participant 18/25: Marek","timestamp":"2025-06-08 11:44:30"}
+{"level":"info","message":"[0002799] Downloaded PDF 18 for Marek","timestamp":"2025-06-08 11:44:45"}
+{"level":"info","message":"[0002799] Processing participant 19/25: Hana","timestamp":"2025-06-08 11:44:45"}
+{"level":"info","message":"[0002799] Downloaded PDF 19 for Hana","timestamp":"2025-06-08 11:44:58"}
+{"level":"info","message":"[0002799] Processing participant 20/25: Alena","timestamp":"2025-06-08 11:44:58"}
+{"level":"info","message":"[0002799] Downloaded PDF 20 for Alena","timestamp":"2025-06-08 11:45:13"}
+{"level":"info","message":"[0002799] Processing participant 21/25: Anna","timestamp":"2025-06-08 11:45:13"}
+{"level":"info","message":"[0002799] Downloaded PDF 21 for Anna","timestamp":"2025-06-08 11:45:26"}
+{"level":"info","message":"[0002799] Processing participant 22/25: Kateřina","timestamp":"2025-06-08 11:45:26"}
+{"level":"info","message":"[0002799] Downloaded PDF 22 for Kateřina","timestamp":"2025-06-08 11:45:39"}
+{"level":"info","message":"[0002799] Processing participant 23/25: Veronika","timestamp":"2025-06-08 11:45:39"}
+{"level":"info","message":"[0002799] Downloaded PDF 23 for Veronika","timestamp":"2025-06-08 11:45:54"}
+{"level":"info","message":"[0002799] Processing participant 24/25: Lenka","timestamp":"2025-06-08 11:45:54"}
+{"level":"info","message":"[0002799] Downloaded PDF 24 for Lenka","timestamp":"2025-06-08 11:46:07"}
+{"level":"info","message":"[0002799] Processing participant 25/25: Zdeněk","timestamp":"2025-06-08 11:46:07"}
+{"level":"info","message":"[0002799] Downloaded PDF 25 for Zdeněk","timestamp":"2025-06-08 11:46:22"}
+{"level":"info","message":"[0002799] Successfully downloaded 25 PDFs out of 25 participants","timestamp":"2025-06-08 11:46:22"}
+{"level":"info","message":"Found 25 PDF cards to download","projectNumber":"0002799","timestamp":"2025-06-08 11:46:22"}
+{"level":"info","message":"Download completed - organizing 25 PDFs","projectNumber":"0002799","timestamp":"2025-06-08 11:46:22"}
+{"filesDownloaded":25,"level":"info","message":"Project completed: 25/25 files downloaded","projectNumber":"0002799","timestamp":"2025-06-08 11:46:22","totalFiles":25}
+{"level":"info","message":"Download process completed: 1/1 successful","timestamp":"2025-06-08 11:46:23"}
+{"level":"warn","message":"Disconnected from Chrome debug session","timestamp":"2025-06-08 11:46:23"}
+{"level":"info","message":"Starting download process for 1 projects","projects":["2718"],"timestamp":"2025-06-08 11:51:44"}
+{"duplicatesRemoved":0,"level":"info","message":"Prepared 1 projects for download","timestamp":"2025-06-08 11:51:44","total":1,"unique":1}
+{"level":"info","message":"Connecting to Chrome on port 9222","timestamp":"2025-06-08 11:51:44"}
+{"level":"info","message":"Available Chrome tabs (1):","timestamp":"2025-06-08 11:51:44"}
+{"level":"info","message":"  Tab 3136656A9835B61F6604BA041BE3FCB7: Detail projektu - https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?acti","timestamp":"2025-06-08 11:51:44"}
+{"level":"info","message":"Found ESF-related tab: Detail projektu - https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?action=get&projektId=77177","timestamp":"2025-06-08 11:51:44"}
+{"level":"info","message":"Connecting to specific tab: 3136656A9835B61F6604BA041BE3FCB7 - https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?action=get&projektId=77177","timestamp":"2025-06-08 11:51:44"}
+{"chromePort":9222,"level":"info","message":"Connected to Chrome debug session","timestamp":"2025-06-08 11:51:44"}
+{"level":"info","message":"Chrome connection established","timestamp":"2025-06-08 11:51:44"}
+{"level":"info","message":"Starting project download","projectNumber":"0002718","timestamp":"2025-06-08 11:51:44"}
+{"level":"info","message":"Navigating to ESF portal and setting up project page","projectNumber":"0002718","timestamp":"2025-06-08 11:51:44"}
+{"level":"info","message":"[0002718] Starting ESF portal navigation","timestamp":"2025-06-08 11:51:44"}
+{"level":"warn","message":"Could not click save button: not found","timestamp":"2025-06-08 11:51:55"}
+{"level":"info","message":"[0002718] Successfully navigated to participants tab","timestamp":"2025-06-08 11:51:59"}
+{"level":"info","message":"Starting automated PDF discovery and download","projectNumber":"0002718","timestamp":"2025-06-08 11:51:59"}
+{"level":"info","message":"[0002718] Discovering participant PDF cards","timestamp":"2025-06-08 11:51:59"}
+{"level":"info","message":"[0002718] Found 1 participants","timestamp":"2025-06-08 11:51:59"}
+{"level":"info","message":"[0002718] Processing participant 1/1: Nikola","timestamp":"2025-06-08 11:51:59"}
+{"level":"info","message":"[0002718] Downloaded PDF 1 for Nikola","timestamp":"2025-06-08 11:52:12"}
+{"level":"info","message":"[0002718] Successfully downloaded 1 PDFs out of 1 participants","timestamp":"2025-06-08 11:52:12"}
+{"level":"info","message":"Found 1 PDF cards to download","projectNumber":"0002718","timestamp":"2025-06-08 11:52:12"}
+{"level":"info","message":"Download completed - organizing 1 PDFs","projectNumber":"0002718","timestamp":"2025-06-08 11:52:12"}
+{"filesDownloaded":1,"level":"info","message":"Project completed: 1/1 files downloaded","projectNumber":"0002718","timestamp":"2025-06-08 11:52:12","totalFiles":1}
+{"level":"info","message":"Download process completed: 1/1 successful","timestamp":"2025-06-08 11:52:13"}
+{"level":"warn","message":"Disconnected from Chrome debug session","timestamp":"2025-06-08 11:52:13"}
+{"level":"info","message":"Starting download process for 1 projects","projects":["742"],"timestamp":"2025-06-08 11:54:41"}
+{"duplicatesRemoved":0,"level":"info","message":"Prepared 1 projects for download","timestamp":"2025-06-08 11:54:41","total":1,"unique":1}
+{"level":"info","message":"Connecting to Chrome on port 9222","timestamp":"2025-06-08 11:54:41"}
+{"level":"info","message":"Available Chrome tabs (1):","timestamp":"2025-06-08 11:54:41"}
+{"level":"info","message":"  Tab 3136656A9835B61F6604BA041BE3FCB7: Detail projektu - https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?acti","timestamp":"2025-06-08 11:54:41"}
+{"level":"info","message":"Found ESF-related tab: Detail projektu - https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?action=get&projektId=77177","timestamp":"2025-06-08 11:54:41"}
+{"level":"info","message":"Connecting to specific tab: 3136656A9835B61F6604BA041BE3FCB7 - https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?action=get&projektId=77177","timestamp":"2025-06-08 11:54:41"}
+{"chromePort":9222,"level":"info","message":"Connected to Chrome debug session","timestamp":"2025-06-08 11:54:41"}
+{"level":"info","message":"Chrome connection established","timestamp":"2025-06-08 11:54:41"}
+{"level":"info","message":"Starting project download","projectNumber":"0000742","timestamp":"2025-06-08 11:54:41"}
+{"level":"info","message":"Navigating to ESF portal and setting up project page","projectNumber":"0000742","timestamp":"2025-06-08 11:54:41"}
+{"level":"info","message":"[0000742] Starting ESF portal navigation","timestamp":"2025-06-08 11:54:41"}
+{"level":"info","message":"[0000742] Successfully navigated to participants tab","timestamp":"2025-06-08 11:55:00"}
+{"level":"info","message":"Starting automated PDF discovery and download","projectNumber":"0000742","timestamp":"2025-06-08 11:55:00"}
+{"level":"info","message":"[0000742] Discovering participant PDF cards","timestamp":"2025-06-08 11:55:00"}
+{"level":"warn","message":"[0000742] No participants found","timestamp":"2025-06-08 11:55:00"}
+{"level":"warn","message":"No PDF cards found for project","projectNumber":"0000742","timestamp":"2025-06-08 11:55:00"}
+{"level":"info","message":"Download process completed: 1/1 successful","timestamp":"2025-06-08 11:55:01"}
+{"level":"warn","message":"Disconnected from Chrome debug session","timestamp":"2025-06-08 11:55:01"}
+{"level":"info","message":"Starting download process for 1 projects","projects":["5518"],"timestamp":"2025-06-08 11:55:50"}
+{"duplicatesRemoved":0,"level":"info","message":"Prepared 1 projects for download","timestamp":"2025-06-08 11:55:50","total":1,"unique":1}
+{"level":"info","message":"Connecting to Chrome on port 9222","timestamp":"2025-06-08 11:55:50"}
+{"level":"info","message":"Available Chrome tabs (1):","timestamp":"2025-06-08 11:55:50"}
+{"level":"info","message":"  Tab 3136656A9835B61F6604BA041BE3FCB7: Detail projektu - https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?acti","timestamp":"2025-06-08 11:55:50"}
+{"level":"info","message":"Found ESF-related tab: Detail projektu - https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?action=get&projektId=75640","timestamp":"2025-06-08 11:55:50"}
+{"level":"info","message":"Connecting to specific tab: 3136656A9835B61F6604BA041BE3FCB7 - https://esf2014.esfcr.cz/PublicPortal/Views/Projekty/ProjektDetailPage.aspx?action=get&projektId=75640","timestamp":"2025-06-08 11:55:50"}
+{"chromePort":9222,"level":"info","message":"Connected to Chrome debug session","timestamp":"2025-06-08 11:55:50"}
+{"level":"info","message":"Chrome connection established","timestamp":"2025-06-08 11:55:50"}
+{"level":"info","message":"Starting project download","projectNumber":"0005518","timestamp":"2025-06-08 11:55:50"}
+{"level":"info","message":"Navigating to ESF portal and setting up project page","projectNumber":"0005518","timestamp":"2025-06-08 11:55:50"}
+{"level":"info","message":"[0005518] Starting ESF portal navigation","timestamp":"2025-06-08 11:55:50"}
+{"level":"info","message":"[0005518] Successfully navigated to participants tab","timestamp":"2025-06-08 11:56:08"}
+{"level":"info","message":"Starting automated PDF discovery and download","projectNumber":"0005518","timestamp":"2025-06-08 11:56:08"}
+{"level":"info","message":"[0005518] Discovering participant PDF cards","timestamp":"2025-06-08 11:56:08"}
+{"level":"warn","message":"[0005518] No participants found","timestamp":"2025-06-08 11:56:08"}
+{"level":"warn","message":"No PDF cards found for project","projectNumber":"0005518","timestamp":"2025-06-08 11:56:08"}
+{"level":"info","message":"Download process completed: 1/1 successful","timestamp":"2025-06-08 11:56:09"}
+{"level":"warn","message":"Disconnected from Chrome debug session","timestamp":"2025-06-08 11:56:09"}
