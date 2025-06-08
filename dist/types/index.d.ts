@@ -116,10 +116,11 @@ export interface ESFProjectUrl {
     fullUrl: string;
 }
 export interface ESFCardInfo {
-    cardNumber: number;
-    fileName: string;
-    downloadUrl: string;
     participantName?: string;
+    participantId?: string;
+    downloadUrl: string;
+    fileName: string;
+    projectNumber?: string;
 }
 export declare class ESFError extends Error {
     type: ErrorEvent['type'];

@@ -74,17 +74,19 @@ class ESFAnalyzer {
     console.log('  help             - Show this help');
     console.log('  exit             - Exit analyzer');
     console.log('');
-    console.log('💡 Recommended workflow for project 740:');
-    console.log('  1. start 740');
+    console.log('💡 Recommended workflow for project 2799:');
+    console.log('  1. start 2799');
     console.log('  2. Navigate to ESF portal and login via identita.gov.cz');
-    console.log('  3. marker "logged-in"');
-    console.log('  4. Navigate to project 740 page');
-    console.log('  5. marker "project-page-loaded"');
-    console.log('  6. Find and click on participant cards/downloads');
-    console.log('  7. marker "found-download-links"');
-    console.log('  8. Download a PDF file');
-    console.log('  9. marker "pdf-downloaded"');
-    console.log('  10. stop');
+    console.log('  3. marker "logged-in-successfully"');
+    console.log('  4. Navigate to project 2799 page');
+    console.log('  5. marker "project-2799-page-loaded"');
+    console.log('  6. Find participant cards section');
+    console.log('  7. marker "found-participant-cards-section"');
+    console.log('  8. Identify download mechanism');
+    console.log('  9. marker "identified-download-mechanism"');
+    console.log('  10. Download a PDF file');
+    console.log('  11. marker "pdf-downloaded"');
+    console.log('  12. stop');
     console.log('');
 
     // Setup readline for interactive commands

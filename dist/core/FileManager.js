@@ -331,7 +331,7 @@ export class FileManager {
         let lastError = null;
         for (let attempt = 1; attempt <= retryAttempts; attempt++) {
             try {
-                logger.debug(`[${projectNumber}] Downloading card ${card.cardNumber}/${card.fileName} (attempt ${attempt}/${retryAttempts})`);
+                logger.debug(`[${projectNumber}] Downloading card ${card.participantId}/${card.fileName} (attempt ${attempt}/${retryAttempts})`);
                 const fileInfo = await this.downloadWithChrome(card.downloadUrl, destination, client, projectNumber);
                 // Validate downloaded file
                 const isValid = await this.validateFile(destination);
@@ -430,7 +430,7 @@ export class FileManager {
             catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Unknown error';
                 failed.push({ card, error: errorMessage });
-                logger.error(`[${projectNumber}] Failed to download card ${card.cardNumber}`, error);
+                logger.error(`[${projectNumber}] Failed to download card ${card.participantId}`, error);
             }
         }
         logger.info(`[${projectNumber}] Download completed: ${successful.length} successful, ${failed.length} failed`);

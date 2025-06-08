@@ -11,6 +11,7 @@ export declare class SessionManager extends ESFEventEmitter {
     private reconnectAttempts;
     private reconnectTimer;
     private isConnecting;
+    private tabManager;
     constructor(chromePort?: number);
     /**
      * Connect to Chrome debug session

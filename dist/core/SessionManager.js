@@ -3,6 +3,7 @@ import { NetworkError } from '../types/index.js';
 import { CHROME_CONFIG } from '../config/defaults.js';
 import { ESFEventEmitter } from '../events/EventEmitter.js';
 import { logger } from '../utils/logger.js';
+import { ChromeTabManager } from '../utils/chrome-tabs.js';
 /**
  * Session Manager for ESF Downloader
  * Handles Chrome connection and session state
@@ -14,9 +15,11 @@ export class SessionManager extends ESFEventEmitter {
     reconnectAttempts = 0;
     reconnectTimer = null;
     isConnecting = false;
+    tabManager;
     constructor(chromePort = CHROME_CONFIG.DEFAULT_PORT) {
         super();
         this.chromePort = chromePort;
+        this.tabManager = new ChromeTabManager(chromePort);
         this.sessionInfo = {
             isConnected: false,
             isAuthenticated: false,
@@ -42,8 +45,23 @@ export class SessionManager extends ESFEventEmitter {
             logger.info(`Connecting to Chrome on port ${this.chromePort}`);
             // Test Chrome availability first
             await this.testChromeAvailability();
-            // Connect to Chrome
-            this.client = await CDP({ port: this.chromePort });
+            // Log available tabs for debugging
+            await this.tabManager.logAvailableTabs();
+            // Find appropriate tab
+            let targetTab = await this.tabManager.findESFTab();
+            if (!targetTab) {
+                targetTab = await this.tabManager.findActiveTab();
+                if (targetTab) {
+                    logger.warn(`No ESF tab found, using active tab: ${targetTab.title}`);
+                }
+            }
+            // Connect to Chrome (with specific tab if found)
+            const connectionOptions = { port: this.chromePort };
+            if (targetTab) {
+                connectionOptions.target = this.tabManager.getTargetForTab(targetTab);
+                logger.info(`Connecting to specific tab: ${targetTab.id} - ${targetTab.url}`);
+            }
+            this.client = await CDP(connectionOptions);
             // Enable required domains
             await this.enableDomains();
             // Setup event handlers

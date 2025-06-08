@@ -1,57 +1,77 @@
 import type { ESFProjectUrl, ESFCardInfo, CDPClient } from '../types/index.js';
 /**
- * ESF Portal Navigator
- * Handles navigation and data extraction from ESF portal
+ * ESF Portal Navigator - Real Implementation
+ * Based on traffic analysis of esf2014.esfcr.cz
+ * Handles ASP.NET ViewState, form submissions, and PDF downloads
  */
 export declare class ESFPortal {
     private chromeUtils;
     private client;
     private currentProject;
+    private viewState;
+    private eventValidation;
     constructor(client: CDPClient, port: number);
     /**
-     * Navigate to project page and verify access
+     * Navigate to project and extract participant PDFs
+     * Real workflow: ProjectsList -> Filter -> Project Detail -> Click "Podpořené osoby" tab
      */
     navigateToProject(projectNumber: string): Promise<ESFProjectUrl>;
     /**
-     * Discover PDF cards on the current project page
+     * Discover and download PDF cards for participants
      */
     discoverPDFCards(projectNumber: string): Promise<ESFCardInfo[]>;
     /**
-     * Check if user is authenticated
+     * Check if user is authenticated to ESF portal
      */
     checkAuthentication(): Promise<boolean>;
     /**
-     * Build project URL from project number
+     * Navigate to projects list page
      */
-    private buildProjectUrl;
+    private navigateToProjectsList;
+    /**
+     * Filter projects by project number using DevExpress grid
+     */
+    private filterByProjectNumber;
+    /**
+     * Trigger project filter using ASP.NET postback
+     */
+    private triggerProjectFilter;
+    /**
+     * Navigate to project detail page
+     */
+    private navigateToProjectDetail;
+    /**
+     * Click on "Podpořené osoby" tab to show participants
+     */
+    private clickSupportedPersonsTab;
     /**
      * Verify user is authenticated, throw error if not
      */
     private verifyAuthentication;
     /**
-     * Verify we're on the correct project page
+     * Extract ASP.NET ViewState and EventValidation from current page
      */
-    private verifyProjectPage;
+    private extractFormState;
     /**
-     * Wait for page content to load
+     * Extract participants list from current page (ProjektDetailPage)
      */
-    private waitForPageContent;
+    private extractParticipantsList;
     /**
-     * Extract card information using multiple strategies
+     * Download PDF for a specific participant
      */
-    private extractCardInfo;
+    private downloadParticipantPDF;
     /**
-     * Extract cards from participant table
+     * Trigger PDF download using ASP.NET postback (based on traffic analysis)
      */
-    private extractFromTable;
+    private triggerPDFDownload;
     /**
-     * Extract cards from card containers
+     * Generate safe filename for participant PDF
      */
-    private extractFromContainers;
+    private generateFileName;
     /**
-     * Extract participant name from filename
+     * Sleep utility
      */
-    private extractParticipantName;
+    private sleep;
     /**
      * Get current project number
      */
@@ -60,9 +80,5 @@ export declare class ESFPortal {
      * Reset current project
      */
     resetCurrentProject(): void;
-    /**
-     * Sleep utility
-     */
-    private sleep;
 }
 //# sourceMappingURL=ESFPortal.d.ts.map

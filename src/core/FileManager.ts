@@ -393,7 +393,7 @@ export class FileManager {
     
     for (let attempt = 1; attempt <= retryAttempts; attempt++) {
       try {
-        logger.debug(`[${projectNumber}] Downloading card ${card.cardNumber}/${card.fileName} (attempt ${attempt}/${retryAttempts})`);
+        logger.debug(`[${projectNumber}] Downloading card ${card.participantId}/${card.fileName} (attempt ${attempt}/${retryAttempts})`);
         
         const fileInfo = await this.downloadWithChrome(
           card.downloadUrl, 
@@ -539,7 +539,7 @@ export class FileManager {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         failed.push({ card, error: errorMessage });
         
-        logger.error(`[${projectNumber}] Failed to download card ${card.cardNumber}`, error as Error);
+        logger.error(`[${projectNumber}] Failed to download card ${card.participantId}`, error as Error);
       }
     }
     

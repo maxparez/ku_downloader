@@ -157,10 +157,11 @@ export interface ESFProjectUrl {
 }
 
 export interface ESFCardInfo {
-  cardNumber: number;
-  fileName: string;
-  downloadUrl: string;
   participantName?: string;
+  participantId?: string;
+  downloadUrl: string;
+  fileName: string;
+  projectNumber?: string;
 }
 
 // Error Types

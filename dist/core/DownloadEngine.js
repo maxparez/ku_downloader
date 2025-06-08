@@ -211,10 +211,11 @@ export class DownloadEngine extends ESFEventEmitter {
             const cardCount = Math.min(Math.floor(Math.random() * 20) + 5, ESF_CONFIG.MAX_CARDS_PER_PROJECT);
             for (let i = 1; i <= cardCount; i++) {
                 simulatedCards.push({
-                    cardNumber: i,
+                    participantId: i.toString(),
                     fileName: `karta_${String(i).padStart(3, '0')}.pdf`,
                     downloadUrl: `https://esf.gov.cz/download/project/${projectNumber}/card/${i}.pdf`,
-                    participantName: `Participant ${i}`
+                    participantName: `Participant ${i}`,
+                    projectNumber
                 });
             }
             logger.debug(`Generated ${simulatedCards.length} simulated cards for testing`, projectNumber);

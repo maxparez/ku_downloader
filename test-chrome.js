@@ -1,4 +1,4 @@
-const CDP = require('chrome-remote-interface');
+import CDP from 'chrome-remote-interface';
 
 async function testChrome() {
     let client;

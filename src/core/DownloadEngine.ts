@@ -276,10 +276,11 @@ export class DownloadEngine extends ESFEventEmitter {
       
       for (let i = 1; i <= cardCount; i++) {
         simulatedCards.push({
-          cardNumber: i,
+          participantId: i.toString(),
           fileName: `karta_${String(i).padStart(3, '0')}.pdf`,
           downloadUrl: `https://esf.gov.cz/download/project/${projectNumber}/card/${i}.pdf`,
-          participantName: `Participant ${i}`
+          participantName: `Participant ${i}`,
+          projectNumber
         });
       }
 

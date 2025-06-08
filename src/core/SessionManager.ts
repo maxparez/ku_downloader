@@ -8,6 +8,7 @@ import { NetworkError, AuthError } from '../types/index.js';
 import { CHROME_CONFIG } from '../config/defaults.js';
 import { ESFEventEmitter } from '../events/EventEmitter.js';
 import { logger } from '../utils/logger.js';
+import { ChromeTabManager } from '../utils/chrome-tabs.js';
 
 /**
  * Session Manager for ESF Downloader
@@ -19,9 +20,12 @@ export class SessionManager extends ESFEventEmitter {
   private reconnectAttempts = 0;
   private reconnectTimer: NodeJS.Timeout | null = null;
   private isConnecting = false;
+  private tabManager: ChromeTabManager;
 
   constructor(private chromePort: number = CHROME_CONFIG.DEFAULT_PORT) {
     super();
+    
+    this.tabManager = new ChromeTabManager(chromePort);
     
     this.sessionInfo = {
       isConnected: false,
@@ -54,8 +58,26 @@ export class SessionManager extends ESFEventEmitter {
       // Test Chrome availability first
       await this.testChromeAvailability();
       
-      // Connect to Chrome
-      this.client = await CDP({ port: this.chromePort });
+      // Log available tabs for debugging
+      await this.tabManager.logAvailableTabs();
+      
+      // Find appropriate tab
+      let targetTab = await this.tabManager.findESFTab();
+      if (!targetTab) {
+        targetTab = await this.tabManager.findActiveTab();
+        if (targetTab) {
+          logger.warn(`No ESF tab found, using active tab: ${targetTab.title}`);
+        }
+      }
+      
+      // Connect to Chrome (with specific tab if found)
+      const connectionOptions: any = { port: this.chromePort };
+      if (targetTab) {
+        connectionOptions.target = this.tabManager.getTargetForTab(targetTab);
+        logger.info(`Connecting to specific tab: ${targetTab.id} - ${targetTab.url}`);
+      }
+      
+      this.client = await CDP(connectionOptions);
       
       // Enable required domains
       await this.enableDomains();
