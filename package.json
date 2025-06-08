@@ -12,6 +12,7 @@
     "build:watch": "tsc --watch",
     "dev": "npm run build && node dist/interfaces/cli/index.js",
     "download": "npm run build && node dist/interfaces/cli/index.js",
+    "analyze": "npm run build && node dist/interfaces/cli/analyzer.js",
     "start": "node dist/interfaces/cli/index.js",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
