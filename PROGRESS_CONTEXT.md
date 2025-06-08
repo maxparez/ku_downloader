@@ -360,14 +360,91 @@ downloadEngine.onError(event => guiErrorDialog.show(event));
 - Cloud deployment readiness
 - Database integration points
 
-## 🎯 Next Technical Steps
+## 🎯 Optimized ESF Portal Workflow (Validated)
 
-### Real-World Data Integration
-Po analýze projekt 740 data:
-1. **Update ESFPortal selectors** based on real HTML structure
-2. **Enhance authentication flow** s actual cookie requirements
-3. **Optimize download strategies** based on actual PDF mechanisms
-4. **Add specific error handling** pro discovered edge cases
+### Complete Download Workflow Steps
+Based on successful testing with project 2799:
+
+1. **Navigate to Project Page**
+   ```
+   https://esf.gov.cz/zpravy-o-realizaci/cz-02-02-xx-00-24_034/0002799/ucastnici
+   ```
+
+2. **Wait for Participants Table** (1-2 seconds)
+   - Table selector: `table.table.table-striped.table-hover.table-bordered`
+
+3. **Extract Participant Links**
+   ```javascript
+   // Links in format: /zpravy-o-realizaci/cz-02-02-xx-00-24_034/0002799/ucastnici/325123
+   const participantLinks = document.querySelectorAll('table tbody tr td:first-child a');
+   ```
+
+4. **For Each Participant - Optimized Flow**:
+   
+   a) **Navigate Directly to Participant URL** (no back button needed!)
+      ```
+      https://esf.gov.cz/zpravy-o-realizaci/cz-02-02-xx-00-24_034/0002799/ucastnici/325123
+      ```
+   
+   b) **Wait and Check Checkbox** (critical step!)
+      ```javascript
+      const checkbox = document.querySelector('input#zobrazitUcastnika');
+      if (checkbox && !checkbox.checked) {
+        checkbox.click();
+        await wait(1000); // Wait for tabs to appear
+      }
+      ```
+   
+   c) **Click "Jednotky na účastníkovi" Tab**
+      ```javascript
+      const tab = document.querySelector('a[href*="jednotkyNaUcastnikovi"]');
+      tab.click();
+      await wait(1000); // Wait for content to load
+      ```
+   
+   d) **Extract PDF Links from Table**
+      ```javascript
+      const pdfLinks = document.querySelectorAll('table#jednotkyNaUcastnikovi tbody tr td:last-child a[href*=".pdf"]');
+      // Links like: /api/file/655c7d90e2c6a1e3c49b6e5f/KU_325123_OPJAK_24_034-0002799.pdf
+      ```
+   
+   e) **Download Each PDF**
+      - Use Chrome navigation to handle authenticated downloads
+      - Full URL: `https://esf.gov.cz/api/file/655c7d90e2c6a1e3c49b6e5f/KU_325123_OPJAK_24_034-0002799.pdf`
+
+5. **Repeat for All Participants**
+   - No need to go back, just navigate to next participant URL directly
+
+### Key Implementation Details
+
+#### Selectors Discovered
+```typescript
+const SELECTORS = {
+  participantsTable: 'table.table.table-striped.table-hover.table-bordered',
+  participantLink: 'table tbody tr td:first-child a',
+  showParticipantCheckbox: 'input#zobrazitUcastnika',
+  jednotkyTab: 'a[href*="jednotkyNaUcastnikovi"]',
+  pdfTable: 'table#jednotkyNaUcastnikovi',
+  pdfLink: 'table#jednotkyNaUcastnikovi tbody tr td:last-child a[href*=".pdf"]'
+};
+```
+
+#### Timing Optimizations
+```typescript
+const DELAYS = {
+  afterNavigation: 2000,      // Wait for page load
+  afterCheckboxClick: 1000,   // Wait for tabs to appear
+  afterTabClick: 1000,        // Wait for table content
+  betweenDownloads: 1000,     // Rate limiting
+  betweenParticipants: 2000   // Clean navigation
+};
+```
+
+#### Error Handling Considerations
+- Check if checkbox exists (might already be checked)
+- Verify tab appears after checkbox click
+- Handle empty PDF tables (no units for participant)
+- Validate PDF download completion
 
 ### Production Optimization
 1. **Performance profiling** s large project sets

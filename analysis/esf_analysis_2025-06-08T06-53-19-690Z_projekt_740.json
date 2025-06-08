@@ -1,0 +1,41 @@
+{
+  "session": {
+    "startTime": 1749365346401,
+    "projectNumber": "740",
+    "requests": [],
+    "responses": [],
+    "pageEvents": [
+      {
+        "type": "user-action",
+        "url": "chrome-error://chromewebdata/",
+        "title": "Privacy error",
+        "timestamp": 1749365346423,
+        "details": {
+          "eventType": "recording-start"
+        }
+      },
+      {
+        "type": "user-action",
+        "url": "chrome-error://chromewebdata/",
+        "title": "Privacy error",
+        "timestamp": 1749365599690,
+        "details": {
+          "eventType": "recording-end"
+        }
+      }
+    ],
+    "cookies": [],
+    "localStorage": {},
+    "sessionStorage": {},
+    "endTime": 1749365599680
+  },
+  "statistics": {
+    "duration": 253279,
+    "totalRequests": 0,
+    "totalResponses": 0,
+    "totalPageEvents": 2,
+    "uniqueDomains": [],
+    "pdfRequests": 0,
+    "authenticationEvents": 0
+  }
+}
