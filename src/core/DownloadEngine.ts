@@ -123,9 +123,19 @@ export class DownloadEngine extends ESFEventEmitter {
       await this.fileManager.createProjectDirectory(normalizedNumber);
       
       // Navigate to project page using ESF portal
+      projectLogger.info('Navigating to ESF portal and setting up project page');
       await this.esfPortal!.navigateToProject(normalizedNumber);
       
-      // Discover PDF cards
+      // Set progress callback for real-time updates
+      this.esfPortal!.setProgressCallback((progress) => {
+        this.emitDownloadProgress(normalizedNumber, progress.current, progress.total, {
+          fileName: progress.participant,
+          downloaded: progress.downloaded
+        });
+      });
+      
+      // Discover and download PDF cards using optimized workflow
+      projectLogger.info('Starting automated PDF discovery and download');
       const cards = await this.esfPortal!.discoverPDFCards(normalizedNumber);
       
       if (cards.length === 0) {
@@ -163,21 +173,19 @@ export class DownloadEngine extends ESFEventEmitter {
         };
       }
 
-      // Download PDF cards using enhanced FileManager
-      const result = await this.fileManager.downloadPDFCards(
-        cards,
-        normalizedNumber,
-        this.sessionManager.getClient(),
-        this.config.rateLimit,
-        (current, total) => {
-          this.emitDownloadProgress(normalizedNumber, current, total, {
-            fileName: cards[current - 1]?.fileName
-          });
-        }
-      );
+      // Cards are already downloaded by ESFPortal.discoverPDFCards
+      // Just organize the results
+      projectLogger.info(`Download completed - organizing ${cards.length} PDFs`);
+      
+      const successful = cards.filter(card => card.downloadUrl !== null);
+      const failed = cards.filter(card => card.downloadUrl === null);
+      
+      const failedWithErrors = failed.map(card => ({
+        card,
+        error: 'Failed to download PDF'
+      }));
 
-      const { successful, failed } = result;
-      const errors = failed.map(f => f.error);
+      const errors = failedWithErrors.map(f => f.error);
 
       // Create metadata
       const metadata = this.createSuccessMetadata(
@@ -241,104 +249,7 @@ export class DownloadEngine extends ESFEventEmitter {
     }
   }
 
-  /**
-   * Extract card information from project page
-   */
-  private async extractCardInfo(projectNumber: string): Promise<ESFCardInfo[]> {
-    try {
-      // This is a placeholder - actual implementation would depend on ESF portal structure
-      // For now, simulate finding cards
-      logger.debug(`Extracting card info for project ${projectNumber}`, projectNumber);
-      
-      // Execute script to find download links
-      const result = await this.sessionManager.executeCommand('Runtime.evaluate', {
-        expression: `
-          // Find all PDF download links
-          const links = Array.from(document.querySelectorAll('a[href*=".pdf"]'));
-          links.map((link, index) => ({
-            cardNumber: index + 1,
-            fileName: \`karta_\${String(index + 1).padStart(3, '0')}.pdf\`,
-            downloadUrl: link.href,
-            participantName: link.textContent?.trim() || 'Unknown'
-          }));
-        `
-      });
 
-      if (result.result && result.result.value) {
-        const cards = result.result.value as ESFCardInfo[];
-        logger.debug(`Found ${cards.length} cards`, projectNumber);
-        return cards;
-      }
-
-      // Fallback: simulate some cards for testing
-      const simulatedCards: ESFCardInfo[] = [];
-      const cardCount = Math.min(Math.floor(Math.random() * 20) + 5, ESF_CONFIG.MAX_CARDS_PER_PROJECT);
-      
-      for (let i = 1; i <= cardCount; i++) {
-        simulatedCards.push({
-          participantId: i.toString(),
-          fileName: `karta_${String(i).padStart(3, '0')}.pdf`,
-          downloadUrl: `https://esf.gov.cz/download/project/${projectNumber}/card/${i}.pdf`,
-          participantName: `Participant ${i}`,
-          projectNumber
-        });
-      }
-
-      logger.debug(`Generated ${simulatedCards.length} simulated cards for testing`, projectNumber);
-      return simulatedCards;
-
-    } catch (error) {
-      logger.error(`Failed to extract card info for project ${projectNumber}`, error as Error, projectNumber);
-      return [];
-    }
-  }
-
-  /**
-   * Download individual card
-   */
-  private async downloadCard(card: ESFCardInfo, projectNumber: string): Promise<void> {
-    const projectDir = await this.fileManager.createProjectDirectory(projectNumber);
-    const filePath = `${projectDir}/${card.fileName}`;
-    
-    // Check if file already exists
-    if (await this.fileManager.fileExists(filePath)) {
-      const isValid = await this.fileManager.validateFile(filePath);
-      if (isValid) {
-        logger.debug(`File already exists and is valid: ${card.fileName}`, projectNumber);
-        return;
-      } else {
-        logger.debug(`Existing file is invalid, re-downloading: ${card.fileName}`, projectNumber);
-      }
-    }
-
-    // Download with retries
-    let lastError: Error | null = null;
-    for (let attempt = 1; attempt <= this.config.retryAttempts; attempt++) {
-      try {
-        await this.fileManager.downloadFile(card.downloadUrl, filePath, projectNumber);
-        
-        // Validate downloaded file
-        const isValid = await this.fileManager.validateFile(filePath);
-        if (!isValid) {
-          throw new Error('Downloaded file failed validation');
-        }
-        
-        return; // Success
-        
-      } catch (error) {
-        lastError = error as Error;
-        logger.warn(`Download attempt ${attempt}/${this.config.retryAttempts} failed for ${card.fileName}`, projectNumber, {
-          error: (error as Error).message
-        });
-        
-        if (attempt < this.config.retryAttempts) {
-          await this.delay(1000 * attempt); // Exponential backoff
-        }
-      }
-    }
-
-    throw lastError || new Error('Download failed after all retry attempts');
-  }
 
   /**
    * Prepare projects for download
@@ -455,6 +366,11 @@ export class DownloadEngine extends ESFEventEmitter {
    */
   async cleanup(): Promise<void> {
     try {
+      // Reset ESF portal
+      if (this.esfPortal) {
+        this.esfPortal.resetCurrentProject();
+      }
+      
       await this.sessionManager.cleanup();
       this.removeAllESFListeners();
       logger.debug('DownloadEngine cleanup completed');
