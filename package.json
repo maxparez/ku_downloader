@@ -1,0 +1,51 @@
+{
+  "name": "esf-downloader",
+  "version": "1.0.0",
+  "description": "ESF ČR PDF downloader with identita.gov.cz authentication",
+  "main": "dist/interfaces/cli/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "dev": "npm run build && node dist/interfaces/cli/index.js",
+    "download": "npm run build && node dist/interfaces/cli/index.js",
+    "analyze": "npm run build && node dist/interfaces/cli/analyzer.js",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "clean": "rimraf dist",
+    "prepare": "npm run build"
+  },
+  "keywords": ["esf", "downloader", "pdf", "automation", "chrome"],
+  "author": "max.parez@seznam.cz",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maxparez/ku_downloader.git"
+  },
+  "dependencies": {
+    "puppeteer": "^21.6.1",
+    "chrome-remote-interface": "^0.33.3",
+    "winston": "^3.11.0",
+    "commander": "^11.1.0",
+    "eventemitter3": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/jest": "^29.5.8",
+    "typescript": "^5.3.3",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "prettier": "^3.1.1",
+    "rimraf": "^5.0.5",
+    "cross-env": "^7.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
